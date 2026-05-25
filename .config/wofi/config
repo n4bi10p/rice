@@ -1,0 +1,13 @@
+# Centered and dark as requested
+allow_images=true
+show=drun
+cache_file=/dev/null # Do not cache applications for fresh results
+term=kitty # Use kitty as the default terminal for launching apps
+columns=1
+width=40%
+height=50%
+location=center
+xoffset=0
+yoffset=0
+# Uncomment the line below if you want to use a custom CSS file
+# css_file=/home/n4bi10p/.config/wofi/style.css

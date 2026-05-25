@@ -1,0 +1,38 @@
+* {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    background-color: #0a0a0a;
+    color: #ffffff;
+    border-radius: 0px; /* Absolutely no rounding */
+    border: none;
+    min-height: 0;
+}
+
+window {
+    background-color: #0a0a0a;
+    border: 2px solid #555555;
+    border-radius: 0px; /* Absolutely no rounding */
+}
+
+button {
+    background-color: #111111;
+    color: #e0e0e0;
+    margin: 5px;
+    padding: 15px;
+    border: 2px solid #2a2a2a;
+    border-radius: 0px; /* Absolutely no rounding */
+    min-width: 120px; /* Ensure buttons are wide enough */
+}
+
+button:focus {
+    background-color: #1c1c1c;
+    border-color: #ffffff; /* White border on focus */
+    color: #ffffff;
+    outline: none;
+}
+
+button:hover {
+    background-color: #2a2a2a;
+    border-color: #e0e0e0; /* Light grey border on hover */
+    color: #ffffff;
+}

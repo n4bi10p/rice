@@ -1,0 +1,96 @@
+{
+  // ===========================================================================
+  // FASTFETCH CONFIGURATION (v2.x JSONC) - MONOCHROME & KITTY IMAGE
+  // ===========================================================================
+  
+  // JSON schema for syntax highlighting and validation
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  // --- IMAGE SETTINGS ---
+  "logo": {
+    "type": "kitty-direct", // Render using kitty image protocol
+    "source": "~/.config/fastfetch/image.png", // Path to your image
+    "width": 20, // 20 characters wide
+    "height": 10, // 10 characters tall
+    "padding": {
+      "top": 1,
+      "left": 1, // 1 space of padding on the left
+      "right": 3 // 3 spaces gap between image and info columns
+    }
+  },
+
+  // --- DISPLAY & STYLING SETTINGS ---
+  "display": {
+    "separator": "  ", // Key-value separator: two spaces for clean alignment
+    "color": {
+      // 38;2;85;85;85 is direct truecolor RGB for #555555 (dimmed gray)
+      // This applies to all module labels/keys
+      "keys": "38;2;85;85;85"
+    }
+  },
+
+  // --- MODULES TO SHOW (IN EXACT ORDER) ---
+  // Note: Values are inherently printed in the default terminal text color 
+  // (which is bright white #e0e0e0 in our Kitty config).
+  // Note: The color blocks row is omitted simply by not including the "colors" module here.
+  "modules": [
+    {
+      "type": "title",
+      "color": {
+        // Standard "white" applies bold bright white to the title
+        "user": "white",
+        "at": "white",
+        "host": "white"
+      }
+    },
+    {
+      "type": "separator",
+      "string": "-", // Plain dashes
+      "color": "38;2;85;85;85" // Dimmed gray to match the labels
+    },
+    {
+      "type": "os",
+      "key": "OS"
+    },
+    {
+      "type": "host",
+      "key": "Host"
+    },
+    {
+      "type": "kernel",
+      "key": "Kernel"
+    },
+    {
+      "type": "uptime",
+      "key": "Uptime"
+    },
+    {
+      "type": "shell",
+      "key": "Shell"
+    },
+    {
+      "type": "resolution",
+      "key": "Resolution"
+    },
+    {
+      "type": "wm",
+      "key": "WM"
+    },
+    {
+      "type": "terminal",
+      "key": "Terminal"
+    },
+    {
+      "type": "cpu",
+      "key": "CPU"
+    },
+    {
+      "type": "gpu",
+      "key": "GPU"
+    },
+    {
+      "type": "memory",
+      "key": "Memory"
+    }
+  ]
+}

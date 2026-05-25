@@ -1,0 +1,74 @@
+# ===========================================================================
+# DUNST CONFIGURATION
+# ===========================================================================
+
+[global]
+    # Font and Colors
+    font = JetBrains Mono 10
+    # Pitch black background, white text
+    background = "#0a0a0a"
+    foreground = "#ffffff"
+    # Border color matching the general theme - dark grey
+    frame_color = "#555555"
+    
+    # CRITICAL: No border radius
+    corner_radius = 0
+    # Border width
+    frame_width = 2
+
+    # Placement: Top-right as requested
+    origin = top-right
+    offset = 10x10
+    width = 300
+    height = 50
+
+    # Misc
+    notification_limit = 5
+    max_icon_size = 32
+    word_wrap = true
+    markup = full
+    format = "<b>%s</b>\n%b"
+    line_height = 0 # Don't change line height
+
+    # Timeouts
+    startup_notification = true
+    # Default display time for notifications (seconds)
+    history_length = 20
+    shrink = false
+    separator_height = 2
+    padding = 8
+    horizontal_padding = 10
+
+    # Actions
+    browser = xdg-open
+    # Close notification on middle click
+    middle_click_action = close
+    # Close notification on right click
+    right_click_action = close
+
+    # Mouse
+    mouse_left_click = close_current
+    mouse_middle_click = do_action, close_current
+    mouse_right_click = close_all
+
+
+# --- URGENCY LEVELS ---
+
+[urgency_low]
+    background = "#0a0a0a"
+    foreground = "#e0e0e0"
+    timeout = 5
+    frame_color = "#2a2a2a"
+
+[urgency_normal]
+    background = "#0a0a0a"
+    foreground = "#ffffff"
+    timeout = 10
+    frame_color = "#555555"
+
+[urgency_critical]
+    # Red-ish accent for critical, standing out while still monochrome-ish
+    background = "#1c1c1c" 
+    foreground = "#ffffff"
+    frame_color = "#888888" # Brighter accent for critical
+    timeout = 0 # Stays until clicked

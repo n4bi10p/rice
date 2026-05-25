@@ -1,0 +1,86 @@
+* {
+    /* JetBrains Mono enforced everywhere */
+    font-family: "JetBrains Mono", "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    /* Strict zero border radius */
+    border-radius: 0;
+    border: none;
+    min-height: 0;
+}
+
+window#waybar {
+    /* Pitch black background with 1px dark grey border on bottom */
+    background-color: #0a0a0a;
+    color: #ffffff;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+/* Tooltips */
+tooltip {
+    background: #0a0a0a;
+    border: 1px solid #555555;
+    border-radius: 0;
+}
+tooltip label {
+    color: #ffffff;
+}
+
+/* --- LEFT: Workspaces --- */
+#workspaces {
+    margin: 6px 15px 6px 6px;
+}
+
+#workspaces button {
+    /* Inactive workspaces: Dark grey background, square */
+    background-color: #1c1c1c;
+    color: #888888;
+    padding: 0;
+    min-width: 28px;
+    margin-right: 2px;
+    border-radius: 0;
+    transition: none;
+}
+
+#workspaces button.active {
+    /* Active workspace: Bright white background, black text */
+    background-color: #ffffff;
+    color: #0a0a0a;
+}
+
+/* --- LEFT: Window Title --- */
+#window {
+    color: #ffffff;
+    padding: 0 15px;
+}
+
+/* --- CENTER: Clock --- */
+#clock {
+    color: #ffffff;
+    padding: 0 15px;
+}
+
+/* --- RIGHT: System Modules --- */
+#cpu,
+#memory,
+#battery,
+#network,
+#custom-separator,
+#pulseaudio,
+#bluetooth,
+#tray {
+    /* Transparent backgrounds, purely reliant on text colors */
+    background-color: transparent;
+    color: #ffffff;
+    padding: 0 8px;
+}
+
+#custom-separator {
+    color: #555555;
+    padding: 0 4px;
+}
+
+#tray {
+    padding-right: 15px;
+}
