@@ -1,33 +1,30 @@
-# ===========================================================================
-# WLOGOUT LAYOUT
-# ===========================================================================
-
-[buttons]
-label = "lock"
-action = "hyprlock"
-text_color = "ffffff"
-keybind = "l"
-
-[buttons]
-label = "suspend"
-action = "systemctl suspend"
-text_color = "ffffff"
-keybind = "s"
-
-[buttons]
-label = "logout"
-action = "hyprctl dispatch exit"
-text_color = "ffffff"
-keybind = "e"
-
-[buttons]
-label = "reboot"
-action = "systemctl reboot"
-text_color = "ffffff"
-keybind = "r"
-
-[buttons]
-label = "shutdown"
-action = "systemctl poweroff"
-text_color = "ffffff"
-keybind = "p"
+{
+    "label": "lock",
+    "action": "hyprlock",
+    "text": "LOCK",
+    "keybind": "l"
+}
+{
+    "label": "suspend",
+    "action": "systemctl suspend",
+    "text": "SLEEP",
+    "keybind": "s"
+}
+{
+    "label": "logout",
+    "action": "hyprctl dispatch exit",
+    "text": "LOGOUT",
+    "keybind": "e"
+}
+{
+    "label": "reboot",
+    "action": "systemctl reboot",
+    "text": "REBOOT",
+    "keybind": "r"
+}
+{
+    "label": "shutdown",
+    "action": "systemctl poweroff",
+    "text": "SHUTDOWN",
+    "keybind": "p"
+}
