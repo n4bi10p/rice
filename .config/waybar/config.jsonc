@@ -40,8 +40,11 @@
     },
 
     "hyprland/window": {
-        "format": "<span color='#888888'></span>  <span color='#e0e0e0'>{title}</span>",
+        "format": "<span color='#e0e0e0'>{title}</span>",
+        "icon": true,
+        "icon-size": 14,
         "max-length": 50,
+        "tooltip": false,
         "rewrite": {
             "(.*kitty.*)": "TERM",
             "(.*Firefox.*|.*Mozilla Firefox.*)": "WEB BROWSER",
