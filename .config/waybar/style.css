@@ -1,26 +1,22 @@
 * {
-    /* JetBrains Mono enforced everywhere */
     font-family: "JetBrains Mono", "JetBrainsMono Nerd Font", monospace;
     font-size: 13px;
     font-weight: bold;
-    text-transform: uppercase;
-    /* Strict zero border radius */
     border-radius: 0;
     border: none;
     min-height: 0;
 }
 
 window#waybar {
-    /* Pitch black background with 1px dark grey border on bottom */
     background-color: #0a0a0a;
     color: #ffffff;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid #111111;
 }
 
 /* Tooltips */
 tooltip {
     background: #0a0a0a;
-    border: 1px solid #555555;
+    border: 1px solid #2a2a2a;
     border-radius: 0;
 }
 tooltip label {
@@ -29,35 +25,37 @@ tooltip label {
 
 /* --- LEFT: Workspaces --- */
 #workspaces {
-    margin: 6px 15px 6px 6px;
+    margin: 4px 0 4px 10px;
 }
 
 #workspaces button {
-    /* Inactive workspaces: Dark grey background, square */
     background-color: #1c1c1c;
     color: #888888;
     padding: 0;
     min-width: 28px;
-    margin-right: 2px;
+    margin-right: 4px;
     border-radius: 0;
     transition: none;
 }
 
 #workspaces button.active {
-    /* Active workspace: Bright white background, black text */
-    background-color: #ffffff;
+    background-color: #e0e0e0;
     color: #0a0a0a;
+}
+
+#workspaces button:hover {
+    background-color: #2a2a2a;
+    color: #ffffff;
 }
 
 /* --- LEFT: Window Title --- */
 #window {
     color: #ffffff;
-    padding: 0 15px;
+    padding: 0 10px;
 }
 
 /* --- CENTER: Clock --- */
 #clock {
-    color: #ffffff;
     padding: 0 15px;
 }
 
@@ -66,21 +64,19 @@ tooltip label {
 #memory,
 #battery,
 #network,
-#custom-separator,
 #pulseaudio,
 #bluetooth,
-#tray {
-    /* Transparent backgrounds, purely reliant on text colors */
+#custom-notification {
     background-color: transparent;
     color: #ffffff;
-    padding: 0 8px;
+    padding: 0 12px;
 }
 
 #custom-separator {
-    color: #555555;
-    padding: 0 4px;
+    color: #2a2a2a;
+    padding: 0 10px;
 }
 
-#tray {
-    padding-right: 15px;
+#custom-notification {
+    padding-right: 20px;
 }

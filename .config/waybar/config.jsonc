@@ -1,17 +1,13 @@
 {
-    // ===========================================================================
-    // WAYBAR CONFIGURATION
-    // ===========================================================================
-    
     "layer": "top",
     "position": "top",
-    // FIX 1: Set height to 28 for a tight, minimal bar
-    "height": 28,
+    "height": 32,
     "spacing": 0,
     "exclusive": true,
 
     "modules-left": [
         "hyprland/workspaces",
+        "custom/separator",
         "hyprland/window"
     ],
     "modules-center": [
@@ -25,17 +21,15 @@
         "custom/separator",
         "pulseaudio",
         "bluetooth",
-        "tray"
+        "custom/notification"
     ],
 
-    // WORKSPACES
     "hyprland/workspaces": {
         "format": "{name}",
         "disable-scroll": true,
         "all-outputs": true,
         "active-only": false,
         "on-click": "activate",
-        // FIX 2: Add persistent workspaces 1-5
         "persistent-workspaces": {
             "1": [],
             "2": [],
@@ -45,13 +39,9 @@
         }
     },
 
-    // WINDOW TITLE
-    // Uses terminal icon (U+F120) from Nerd Fonts
     "hyprland/window": {
-        // FIX 3: Change {class} to {title}
-        "format": "<span color='#555555'></span>  <span color='#e0e0e0'>{title}</span>",
+        "format": "<span color='#888888'></span>  <span color='#e0e0e0'>{title}</span>",
         "max-length": 50,
-        // FIX 3: Rewrite patterns based on window titles
         "rewrite": {
             "(.*kitty.*)": "TERM",
             "(.*Firefox.*|.*Mozilla Firefox.*)": "WEB BROWSER",
@@ -64,83 +54,60 @@
         }
     },
 
-    // CLOCK
     "clock": {
-        // FIX 7: Use {:%P} for uppercase AM/PM. 
-        // Day/period dimmed #888888, time bold #ffffff, double spaces.
-        "format": "<span color='#888888'>{:%a}</span>  <span color='#ffffff' font_weight='bold'>{:%I:%M}</span>  <span color='#888888'>{:%P}</span>",
+        "format": "<span color='#888888'>{0:%a}</span>  <span color='#ffffff' font_weight='bold'>{0:%I:%M}</span>  <span color='#888888'>{0:%p}</span>",
         "tooltip": false
     },
 
-    // CPU
-    // Uses gear icon (U+F013) from Nerd Fonts
     "cpu": {
-        // DESIGN RULES: Icon dimmed (#555555), value bright (#e0e0e0)
-        "format": "<span color='#555555'></span> <span color='#e0e0e0'>{usage}%</span>",
+        "format": "<span color='#888888'></span>  <span color='#e0e0e0'>{usage}%</span>",
         "interval": 2,
-        // FIX 6: Plain text fallback tooltip
         "tooltip-format": "CPU Usage"
     },
 
-    // MEMORY
-    // Uses RAM icon (U+F0CA) from Nerd Fonts
     "memory": {
-        "format": "<span color='#555555'></span> <span color='#e0e0e0'>{used:0.1f}G</span>",
+        "format": "<span color='#888888'></span>  <span color='#e0e0e0'>{used:0.1f}G</span>",
         "interval": 2,
-        // FIX 6: Plain text fallback tooltip
         "tooltip-format": "Memory Usage"
     },
 
-    // BATTERY
-    // Uses battery full (U+F240) and plug (U+F1E6) from Nerd Fonts
     "battery": {
-        "format": "<span color='#555555'></span> <span color='#e0e0e0'>{capacity}%</span>",
-        "format-charging": "<span color='#555555'></span> <span color='#e0e0e0'>{capacity}%</span>",
-        "format-plugged": "<span color='#555555'></span> <span color='#e0e0e0'>{capacity}%</span>",
-        // FIX 5: Handle 100% plugged in state cleanly
-        "format-full": "<span color='#555555'></span> <span color='#e0e0e0'>FULL</span>",
-        // FIX 6: Plain text fallback tooltip
+        "format": "<span color='#888888'>󰁹</span>  <span color='#e0e0e0'>{capacity}%</span>",
+        "format-charging": "<span color='#888888'>󰂄</span>  <span color='#e0e0e0'>{capacity}%</span>",
+        "format-plugged": "<span color='#888888'>󰂄</span>  <span color='#e0e0e0'>{capacity}%</span>",
+        "format-full": "<span color='#888888'>󰁹</span>  <span color='#e0e0e0'>100%</span>",
         "tooltip-format": "Battery Status"
     },
 
-    // NETWORK
-    // Uses wifi (U+F1EB), ethernet (U+F796), and warning (U+26A0) from Nerd Fonts
     "network": {
-        "format-wifi": "<span color='#555555'></span> <span color='#e0e0e0'>{essid}</span>",
-        "format-ethernet": "<span color='#555555'></span> <span color='#e0e0e0'>WIRED</span>",
-        "format-disconnected": "<span color='#555555'>⚠</span> <span color='#e0e0e0'>OFFLINE</span>",
+        "format-wifi": "<span color='#888888'></span>  <span color='#e0e0e0'>{essid}</span>",
+        "format-ethernet": "<span color='#888888'>󰈀</span>  <span color='#e0e0e0'>WIRED</span>",
+        "format-disconnected": "<span color='#888888'>󰤮</span>  <span color='#e0e0e0'>OFFLINE</span>",
+        "on-click": "nm-connection-editor",
         "tooltip": false
     },
 
-    // SEPARATOR
     "custom/separator": {
-        // DESIGN RULES: Separator color #2a2a2a
-        "format": "<span color='#2a2a2a'>|</span>",
+        "format": "|",
         "tooltip": false
     },
 
-    // PULSEAUDIO
-    // Uses volume high (U+F028) and volume muted (U+F026) from Nerd Fonts
     "pulseaudio": {
-        // FIX 4: Show volume percentage
-        "format": "<span color='#555555'></span> <span color='#e0e0e0'>{volume}%</span>",
-        // FIX 4: Show MUTED state
-        "format-muted": "<span color='#555555'></span> <span color='#e0e0e0'>MUTED</span>",
+        "format": "<span color='#888888'></span>",
+        "format-muted": "<span color='#888888'>󰝟</span>",
         "on-click": "pavucontrol",
         "tooltip": false
     },
 
-    // BLUETOOTH
-    // Uses bluetooth (U+F293) from Nerd Fonts
     "bluetooth": {
-        "format": "<span color='#555555'></span>",
-        "format-disabled": "<span color='#555555'></span>",
+        "format": "<span color='#888888'></span>",
+        "format-disabled": "<span color='#888888'>󰂲</span>",
+        "on-click": "blueman-manager",
         "tooltip": false
     },
 
-    // TRAY
-    "tray": {
-        "icon-size": 14,
-        "spacing": 15
+    "custom/notification": {
+        "format": "<span color='#888888'></span>",
+        "tooltip": false
     }
 }

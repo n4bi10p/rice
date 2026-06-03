@@ -10,18 +10,14 @@ WALLPAPER="$HOME/.config/wall/catwall.png"
 
 # --- FUNCTIONS ---
 
-# Function to set wallpaper using swww
+# Function to set wallpaper using swaybg
 set_wallpaper() {
-    if command -v swww > /dev/null; then
-        # Ensure daemon is running
-        if ! pgrep -x "swww-daemon" > /dev/null; then
-            swww-daemon &
-            sleep 1
-        fi
-        swww img "$WALLPAPER" --transition-type simple
-        echo "Wallpaper set with swww."
+    if command -v swaybg > /dev/null; then
+        pkill swaybg
+        swaybg -i "$WALLPAPER" -m fill &
+        echo "Wallpaper set with swaybg."
     else
-        echo "swww not found, skipping wallpaper set."
+        echo "swaybg not found, skipping wallpaper set."
     fi
 }
 
@@ -60,6 +56,13 @@ restart_dunst() {
     echo "Dunst restarted."
 }
 
+# Function to restart Quickshell
+restart_quickshell() {
+    pkill quickshell
+    quickshell -p ~/.config/quickshell/shell.qml &
+    echo "Quickshell restarted."
+}
+
 # --- MAIN EXECUTION ---
 
 echo "Applying rice settings..."
@@ -69,5 +72,6 @@ set_sddm_wallpaper
 
 restart_waybar
 restart_dunst
+restart_quickshell
 
 echo "Rice settings applied."
