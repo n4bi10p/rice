@@ -1,0 +1,90 @@
+* {
+    bg: #0a0a0a;
+    panel: #111111;
+    raised: #1c1c1c;
+    border: #333333;
+    border-soft: #1c1c1c;
+    text: #e0e0e0;
+    muted: #888888;
+    active: #ffffff;
+
+    background-color: transparent;
+    text-color: @text;
+    font: "JetBrains Mono 11";
+    border-radius: 0;
+}
+
+window {
+    width: 520px;
+    location: center;
+    anchor: center;
+    background-color: @bg;
+    border: 1px;
+    border-color: @border;
+    padding: 0;
+}
+
+mainbox {
+    background-color: @bg;
+    spacing: 0;
+    padding: 0;
+}
+
+inputbar {
+    background-color: @bg;
+    border: 0 0 1px 0;
+    border-color: @border-soft;
+    padding: 12px;
+    spacing: 10px;
+}
+
+prompt {
+    text-color: @muted;
+    padding: 0 8px 0 0;
+}
+
+entry {
+    text-color: @active;
+    placeholder: "Search";
+    placeholder-color: @muted;
+}
+
+listview {
+    lines: 10;
+    columns: 1;
+    fixed-height: true;
+    scrollbar: false;
+    background-color: @bg;
+    padding: 6px;
+}
+
+element {
+    background-color: transparent;
+    padding: 8px 10px;
+    spacing: 10px;
+}
+
+element selected {
+    background-color: @raised;
+    text-color: @active;
+}
+
+element-icon {
+    size: 18px;
+}
+
+element-text {
+    text-color: inherit;
+    vertical-align: 0.5;
+}
+
+message {
+    background-color: @bg;
+    border: 1px 0 0 0;
+    border-color: @border-soft;
+    padding: 10px 12px;
+}
+
+textbox {
+    text-color: @muted;
+}

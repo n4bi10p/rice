@@ -1,0 +1,14 @@
+configuration {
+    modi: "drun,run,window";
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    font: "JetBrains Mono 11";
+    terminal: "kitty";
+    drun-display-format: "{name}";
+    display-drun: "APPS";
+    display-run: "RUN";
+    display-window: "WINDOW";
+    sidebar-mode: false;
+}
+
+@theme "terminal-noir"

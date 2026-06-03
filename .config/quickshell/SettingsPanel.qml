@@ -1,0 +1,475 @@
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Wayland
+import Quickshell.Io
+
+PanelWindow {
+    id: settingsPanel
+
+    anchors {
+        top: true
+        bottom: true
+        left: true
+        right: true
+    }
+
+    color: "transparent"
+    visible: false
+    exclusionMode: ExclusionMode.Ignore
+
+    WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.namespace: "settings-panel"
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+
+    property string currentTab: "Quick"
+    property string wallpaperPath: settingsPanel.localPath("../wall/catwall.png")
+    property var tabs: [
+        { name: "Quick", icon: "" },
+        { name: "General", icon: "" },
+        { name: "Bar", icon: "▰" },
+        { name: "Modules", icon: "" },
+        { name: "System", icon: "" },
+        { name: "Keybinds", icon: "" }
+    ]
+
+    function toggle() {
+        settingsPanel.visible = !settingsPanel.visible
+    }
+
+    function open() {
+        settingsPanel.visible = true
+    }
+
+    function close() {
+        settingsPanel.visible = false
+    }
+
+    function localPath(fileName) {
+        const resolved = Qt.resolvedUrl(fileName).toString()
+        return resolved.startsWith("file://") ? decodeURIComponent(resolved.substring(7)) : resolved
+    }
+
+    Process { id: reloadShell; command: ["quickshell", "ipc", "call", "controlcenter", "toggle"]; running: false }
+    Process { id: restartWaybar; command: ["sh", "-c", "pkill waybar; waybar >/tmp/waybar.log 2>&1 &"]; running: false }
+    Process { id: applyWallpaper; command: ["sh", "-c", "pkill swaybg; swaybg -i ~/.config/wall/catwall.png -m fill >/tmp/swaybg.log 2>&1 &"]; running: false }
+    Process { id: lockScreen; command: ["hyprlock"]; running: false }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "#000000"
+        opacity: 0.55
+        MouseArea { anchors.fill: parent; onClicked: settingsPanel.close() }
+    }
+
+    Rectangle {
+        id: window
+        width: Math.min(1000, settingsPanel.width - 80)
+        height: Math.min(650, settingsPanel.height - 80)
+        anchors.centerIn: parent
+        color: "#0a0a0a"
+        border.color: "#333333"
+        border.width: 1
+        clip: true
+        focus: true
+
+        Keys.onEscapePressed: settingsPanel.close()
+
+        RowLayout {
+            anchors.fill: parent
+            spacing: 0
+
+            Rectangle {
+                Layout.preferredWidth: 205
+                Layout.fillHeight: true
+                color: "#101010"
+                border.color: "#1c1c1c"
+                border.width: 1
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    spacing: 8
+
+                    Text {
+                        text: "Settings"
+                        color: "#ffffff"
+                        font.family: "JetBrains Mono"
+                        font.bold: true
+                        font.pixelSize: 20
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.topMargin: 6
+                        Layout.bottomMargin: 8
+                    }
+
+                    Repeater {
+                        model: settingsPanel.tabs
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 42
+                            color: settingsPanel.currentTab === modelData.name ? "#e0e0e0" : "transparent"
+                            border.color: settingsPanel.currentTab === modelData.name ? "#e0e0e0" : "transparent"
+                            border.width: 1
+
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.margins: 10
+                                spacing: 10
+
+                                Text {
+                                    text: modelData.icon
+                                    color: settingsPanel.currentTab === modelData.name ? "#000000" : "#e0e0e0"
+                                    font.pixelSize: 15
+                                    Layout.preferredWidth: 20
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+
+                                Text {
+                                    text: modelData.name
+                                    color: settingsPanel.currentTab === modelData.name ? "#000000" : "#e0e0e0"
+                                    font.family: "JetBrains Mono"
+                                    font.bold: true
+                                    font.pixelSize: 13
+                                    Layout.fillWidth: true
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: settingsPanel.currentTab = modelData.name
+                            }
+                        }
+                    }
+
+                    Item { Layout.fillHeight: true }
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: "TERMINAL NOIR"
+                        color: "#555555"
+                        font.family: "JetBrains Mono"
+                        font.bold: true
+                        font.pixelSize: 10
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: "#0a0a0a"
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    spacing: 16
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 34
+
+                        Text {
+                            text: settingsPanel.currentTab
+                            color: "#ffffff"
+                            font.family: "JetBrains Mono"
+                            font.bold: true
+                            font.pixelSize: 22
+                            Layout.fillWidth: true
+                        }
+
+                        Text {
+                            text: ""
+                            color: "#888888"
+                            font.pixelSize: 16
+                            MouseArea { anchors.fill: parent; onClicked: settingsPanel.close() }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        color: "#0d0d0d"
+                        border.color: "#1c1c1c"
+                        border.width: 1
+                        clip: true
+
+                        Loader {
+                            anchors.fill: parent
+                            anchors.margins: 20
+                            sourceComponent: {
+                                if (settingsPanel.currentTab === "Quick") return quickPage
+                                if (settingsPanel.currentTab === "General") return generalPage
+                                if (settingsPanel.currentTab === "Bar") return barPage
+                                if (settingsPanel.currentTab === "Modules") return modulesPage
+                                if (settingsPanel.currentTab === "System") return systemPage
+                                return keybindsPage
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: quickPage
+        Flickable {
+            contentWidth: width
+            contentHeight: quickColumn.implicitHeight
+            clip: true
+
+            ColumnLayout {
+                id: quickColumn
+                width: parent.width
+                spacing: 18
+
+                SectionTitle { icon: ""; title: "Wallpaper" }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    Rectangle {
+                        Layout.preferredWidth: 320
+                        Layout.preferredHeight: 180
+                        color: "#111111"
+                        border.color: "#333333"
+                        border.width: 1
+                        clip: true
+
+                        Image {
+                            anchors.fill: parent
+                            source: "file://" + settingsPanel.wallpaperPath
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+
+                        ActionButton {
+                            icon: "󰸉"
+                            label: "Apply Wallpaper"
+                            onClicked: { applyWallpaper.running = false; applyWallpaper.running = true }
+                        }
+                        ActionButton {
+                            icon: ""
+                            label: "Restart Waybar"
+                            onClicked: { restartWaybar.running = false; restartWaybar.running = true }
+                        }
+                    }
+                }
+
+                SectionTitle { icon: ""; title: "Theme" }
+                SegmentedRow { title: "Icons"; options: ["Filled", "Outlined", "Sharp", "Two-Tone"]; selectedIndex: 2 }
+                ToggleLine { title: "Colorize Terminal"; subtitle: "Use generated colors in terminal themes"; checked: true }
+                ToggleLine { title: "Dark Mode"; subtitle: "Keep surfaces black and high contrast"; checked: true }
+                SegmentedRow { title: "Bar Style"; options: ["Floating", "Modules", "Islands", "Full"]; selectedIndex: 0 }
+            }
+        }
+    }
+
+    Component {
+        id: generalPage
+        PageColumn {
+            SectionTitle { icon: ""; title: "Typography" }
+            InfoLine { title: "Main Font"; value: "JetBrains Mono" }
+            InfoLine { title: "Mono Font"; value: "JetBrains Mono Nerd Font" }
+            SectionTitle { icon: "◼"; title: "Geometry" }
+            ToggleLine { title: "Sharp Corners"; subtitle: "0px radius across shell surfaces"; checked: true }
+            ToggleLine { title: "No Blur"; subtitle: "Disable visual blur and shadows"; checked: true }
+        }
+    }
+
+    Component {
+        id: barPage
+        PageColumn {
+            SectionTitle { icon: "▰"; title: "Bar" }
+            SegmentedRow { title: "Position"; options: ["Top", "Bottom"]; selectedIndex: 0 }
+            SegmentedRow { title: "Workspaces"; options: ["1-5", "1-9"]; selectedIndex: 0 }
+            InfoLine { title: "Height"; value: "32px" }
+        }
+    }
+
+    Component {
+        id: modulesPage
+        PageColumn {
+            SectionTitle { icon: ""; title: "Modules" }
+            ToggleLine { title: "Network"; subtitle: "Waybar opens the Quickshell control center"; checked: true }
+            ToggleLine { title: "Audio"; subtitle: "Uses wpctl for stable volume state"; checked: true }
+            ToggleLine { title: "Bluetooth"; subtitle: "Uses rfkill for radio toggles"; checked: true }
+            ToggleLine { title: "Stats Widgets"; subtitle: "Hardware and software dashboard"; checked: true }
+        }
+    }
+
+    Component {
+        id: systemPage
+        PageColumn {
+            SectionTitle { icon: ""; title: "System" }
+            InfoLine { title: "Window Manager"; value: "Hyprland" }
+            InfoLine { title: "Shell"; value: "Quickshell" }
+            InfoLine { title: "Launcher"; value: "Rofi" }
+            ActionButton { icon: ""; label: "Lock"; onClicked: { lockScreen.running = false; lockScreen.running = true } }
+        }
+    }
+
+    Component {
+        id: keybindsPage
+        PageColumn {
+            SectionTitle { icon: ""; title: "Keybinds" }
+            InfoLine { title: "Terminal"; value: "SUPER + T" }
+            InfoLine { title: "Launcher"; value: "SUPER + Space" }
+            InfoLine { title: "Lock"; value: "SUPER + CTRL + L" }
+            InfoLine { title: "Logout"; value: "SUPER + M" }
+        }
+    }
+
+    component PageColumn: ColumnLayout {
+        spacing: 14
+    }
+
+    component SectionTitle: RowLayout {
+        property string icon: ""
+        property string title: ""
+        Layout.fillWidth: true
+        spacing: 10
+        Text { text: icon; color: "#e0e0e0"; font.pixelSize: 15; Layout.preferredWidth: 22 }
+        Text {
+            text: title
+            color: "#ffffff"
+            font.family: "JetBrains Mono"
+            font.bold: true
+            font.pixelSize: 16
+        }
+    }
+
+    component ActionButton: Rectangle {
+        signal clicked()
+        property string icon: ""
+        property string label: ""
+        Layout.fillWidth: true
+        Layout.preferredHeight: 48
+        color: mouse.containsMouse ? "#1c1c1c" : "#111111"
+        border.color: "#333333"
+        border.width: 1
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 10
+            Text { text: icon; color: "#e0e0e0"; font.pixelSize: 17; Layout.preferredWidth: 24; horizontalAlignment: Text.AlignHCenter }
+            Text { text: label; color: "#e0e0e0"; font.family: "JetBrains Mono"; font.bold: true; font.pixelSize: 12; Layout.fillWidth: true }
+        }
+
+        MouseArea {
+            id: mouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: parent.clicked()
+        }
+    }
+
+    component ToggleLine: Rectangle {
+        property string title: ""
+        property string subtitle: ""
+        property bool checked: false
+        Layout.fillWidth: true
+        Layout.preferredHeight: 54
+        color: "#101010"
+        border.color: "#1c1c1c"
+        border.width: 1
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 12
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 2
+                Text { text: title; color: "#e0e0e0"; font.family: "JetBrains Mono"; font.bold: true; font.pixelSize: 12 }
+                Text { text: subtitle; color: "#888888"; font.family: "JetBrains Mono"; font.pixelSize: 10; elide: Text.ElideRight; Layout.fillWidth: true }
+            }
+
+            Rectangle {
+                Layout.preferredWidth: 42
+                Layout.preferredHeight: 20
+                color: checked ? "#e0e0e0" : "#1c1c1c"
+                border.color: "#333333"
+                border.width: 1
+                Rectangle {
+                    width: 14
+                    height: 14
+                    x: checked ? parent.width - width - 3 : 3
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: checked ? "#000000" : "#888888"
+                }
+            }
+        }
+    }
+
+    component SegmentedRow: ColumnLayout {
+        property string title: ""
+        property var options: []
+        property int selectedIndex: 0
+        Layout.fillWidth: true
+        spacing: 8
+
+        Text { text: title; color: "#e0e0e0"; font.family: "JetBrains Mono"; font.bold: true; font.pixelSize: 12 }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 6
+            Repeater {
+                model: options
+                Rectangle {
+                    Layout.preferredWidth: Math.max(90, optionText.implicitWidth + 24)
+                    Layout.preferredHeight: 30
+                    color: index === selectedIndex ? "#e0e0e0" : "#1c1c1c"
+                    border.color: "#333333"
+                    border.width: 1
+
+                    Text {
+                        id: optionText
+                        anchors.centerIn: parent
+                        text: modelData
+                        color: index === selectedIndex ? "#000000" : "#e0e0e0"
+                        font.family: "JetBrains Mono"
+                        font.bold: true
+                        font.pixelSize: 11
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: selectedIndex = index
+                    }
+                }
+            }
+        }
+    }
+
+    component InfoLine: Rectangle {
+        property string title: ""
+        property string value: ""
+        Layout.fillWidth: true
+        Layout.preferredHeight: 42
+        color: "#101010"
+        border.color: "#1c1c1c"
+        border.width: 1
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: 12
+            Text { text: title; color: "#888888"; font.family: "JetBrains Mono"; font.pixelSize: 11; Layout.fillWidth: true }
+            Text { text: value; color: "#e0e0e0"; font.family: "JetBrains Mono"; font.bold: true; font.pixelSize: 11 }
+        }
+    }
+}

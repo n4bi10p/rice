@@ -35,7 +35,28 @@ else
     ((FAIL_COUNT++))
 fi
 
-# 3. Check pavucontrol
+# 3. Check runtime tools used by the rice
+for TOOL in quickshell rofi swaybg dunst nmcli rfkill brightnessctl wpctl; do
+    if command -v "$TOOL" > /dev/null; then
+        TOOL_PATH=$(command -v "$TOOL")
+        echo "✅ PASS: $TOOL found at $TOOL_PATH"
+    else
+        echo "❌ FAIL: $TOOL is not installed"
+        case "$TOOL" in
+            quickshell) echo "   FIX: yay -S quickshell-git" ;;
+            rofi) echo "   FIX: sudo pacman -S rofi-wayland" ;;
+            swaybg) echo "   FIX: sudo pacman -S swaybg" ;;
+            dunst) echo "   FIX: sudo pacman -S dunst" ;;
+            nmcli) echo "   FIX: sudo pacman -S networkmanager" ;;
+            rfkill) echo "   FIX: sudo pacman -S util-linux" ;;
+            brightnessctl) echo "   FIX: sudo pacman -S brightnessctl" ;;
+            wpctl) echo "   FIX: sudo pacman -S wireplumber" ;;
+        esac
+        ((FAIL_COUNT++))
+    fi
+done
+
+# 4. Check pavucontrol fallback
 if command -v pavucontrol > /dev/null; then
     PAVU_PATH=$(which pavucontrol)
     echo "✅ PASS: pavucontrol found at $PAVU_PATH"
@@ -45,7 +66,22 @@ else
     ((FAIL_COUNT++))
 fi
 
-# 4. Check Hyprland (hyprctl version)
+# 5. Check Quickshell helper scripts
+for SCRIPT in "$PWD/.config/quickshell/hw_stats.sh" "$PWD/.config/quickshell/sw_stats.sh" "$PWD/.config/quickshell/control_state.sh"; do
+    if [ -x "$SCRIPT" ]; then
+        if "$SCRIPT" > /dev/null; then
+            echo "✅ PASS: $(basename "$SCRIPT") runs"
+        else
+            echo "❌ FAIL: $(basename "$SCRIPT") exists but returned an error"
+            ((FAIL_COUNT++))
+        fi
+    else
+        echo "❌ FAIL: $(basename "$SCRIPT") is missing or not executable"
+        ((FAIL_COUNT++))
+    fi
+done
+
+# 6. Check Hyprland (hyprctl version)
 if command -v hyprctl > /dev/null; then
     if hyprctl version > /dev/null 2>&1; then
         HYPR_VER=$(hyprctl version | grep -i "Tag:" | head -n 1 | awk '{print $2}')

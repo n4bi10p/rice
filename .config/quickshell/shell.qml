@@ -6,6 +6,30 @@ import Quickshell.Services.Mpris
 import Quickshell.Io
 
 ShellRoot {
+    id: root
+
+    // --- IPC SERVER ---
+    IpcHandler {
+        target: "controlcenter"
+        function toggle() {
+            ccPanel.toggle()
+        }
+    }
+
+    ControlCenter {
+        id: ccPanel
+        onRequestSettings: settingsPanel.toggle()
+    }
+
+    SettingsPanel {
+        id: settingsPanel
+    }
+
+    function localPath(fileName) {
+        const resolved = Qt.resolvedUrl(fileName).toString()
+        return resolved.startsWith("file://") ? decodeURIComponent(resolved.substring(7)) : resolved
+    }
+
     // Pick the most recently active player
     readonly property MprisPlayer activePlayer: Mpris.players.values[0] ?? null
 
@@ -15,7 +39,7 @@ ShellRoot {
 
     Process {
         id: hwProcess
-        command: ["/home/n4bi10p/Buildbox/rice/.config/quickshell/hw_stats.sh"]
+        command: [root.localPath("hw_stats.sh")]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
@@ -26,7 +50,7 @@ ShellRoot {
 
     Process {
         id: swProcess
-        command: ["/home/n4bi10p/Buildbox/rice/.config/quickshell/sw_stats.sh"]
+        command: [root.localPath("sw_stats.sh")]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
