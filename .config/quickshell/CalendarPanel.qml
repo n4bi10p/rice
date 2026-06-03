@@ -131,24 +131,23 @@ PanelWindow {
                 model: calendarPanel.days
 
                 Rectangle {
+                    readonly property bool isToday: modelData.current
+                        && modelData.day === calendarPanel.today.getDate()
+                        && calendarPanel.displayMonth === calendarPanel.today.getMonth()
+                        && calendarPanel.displayYear === calendarPanel.today.getFullYear()
+
                     Layout.preferredWidth: 39
                     Layout.preferredHeight: 30
-                    color: {
-                        const isToday = modelData.current
-                            && modelData.day === calendarPanel.today.getDate()
-                            && calendarPanel.displayMonth === calendarPanel.today.getMonth()
-                            && calendarPanel.displayYear === calendarPanel.today.getFullYear()
-                        return isToday ? "#e0e0e0" : "transparent"
-                    }
-                    border.color: modelData.current ? "#1c1c1c" : "transparent"
+                    color: isToday ? "#e0e0e0" : "transparent"
+                    border.color: isToday ? "#ffffff" : (modelData.current ? "#1c1c1c" : "transparent")
                     border.width: 1
 
                     Text {
                         anchors.centerIn: parent
                         text: modelData.day
-                        color: parent.color === "#e0e0e0" ? "#000000" : (modelData.current ? "#e0e0e0" : "#444444")
+                        color: parent.isToday ? "#000000" : (modelData.current ? "#e0e0e0" : "#444444")
                         font.family: "JetBrains Mono"
-                        font.bold: modelData.current
+                        font.bold: parent.isToday || modelData.current
                         font.pixelSize: 11
                     }
                 }
