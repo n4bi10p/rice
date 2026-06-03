@@ -59,6 +59,7 @@
 
     "clock": {
         "format": "<span color='#888888'>{0:%a}</span>  <span color='#ffffff' font_weight='bold'>{0:%I:%M}</span>  <span color='#888888'>{0:%p}</span>",
+        "on-click": "quickshell ipc call calendar toggle",
         "tooltip": false
     },
 

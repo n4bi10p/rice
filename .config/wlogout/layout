@@ -3,10 +3,22 @@
 # ===========================================================================
 
 [buttons]
-label = "shutdown"
-action = "systemctl poweroff"
+label = "lock"
+action = "hyprlock"
+text_color = "ffffff"
+keybind = "l"
+
+[buttons]
+label = "suspend"
+action = "systemctl suspend"
 text_color = "ffffff"
 keybind = "s"
+
+[buttons]
+label = "logout"
+action = "hyprctl dispatch exit"
+text_color = "ffffff"
+keybind = "e"
 
 [buttons]
 label = "reboot"
@@ -15,19 +27,7 @@ text_color = "ffffff"
 keybind = "r"
 
 [buttons]
-label = "logout"
-action = "hyprctl dispatch exit" # Use Hyprland's exit command
+label = "shutdown"
+action = "systemctl poweroff"
 text_color = "ffffff"
-keybind = "l"
-
-[buttons]
-label = "lock"
-action = "hyprlock" # Call hyprlock
-text_color = "ffffff"
-keybind = "o"
-
-[buttons]
-label = "suspend"
-action = "systemctl suspend"
-text_color = "ffffff"
-keybind = "u"
+keybind = "p"

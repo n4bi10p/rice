@@ -16,9 +16,27 @@ ShellRoot {
         }
     }
 
+    IpcHandler {
+        target: "calendar"
+        function toggle() {
+            calendarPanel.toggle()
+        }
+    }
+
     ControlCenter {
         id: ccPanel
         onRequestSettings: settingsPanel.toggle()
+    }
+
+    NotificationPopups {
+        notifications: ccPanel.notifications
+        onOpenNotification: (id) => ccPanel.openNotificationById(id)
+        onDismissNotification: (id) => ccPanel.dismissNotification(id)
+        onHideNotificationPopup: (id) => ccPanel.hideNotificationPopup(id)
+    }
+
+    CalendarPanel {
+        id: calendarPanel
     }
 
     SettingsPanel {

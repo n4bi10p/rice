@@ -1,38 +1,44 @@
 * {
     font-family: "JetBrains Mono", monospace;
-    font-size: 14px;
-    background-color: #0a0a0a;
+    font-size: 13px;
+    font-weight: bold;
+    background-color: transparent;
     color: #ffffff;
-    border-radius: 0px; /* Absolutely no rounding */
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 0px;
     border: none;
     min-height: 0;
 }
 
 window {
-    background-color: #0a0a0a;
-    border: 2px solid #555555;
-    border-radius: 0px; /* Absolutely no rounding */
+    background-color: rgba(0, 0, 0, 0.94);
+    border-radius: 0px;
 }
 
 button {
     background-color: #111111;
-    color: #e0e0e0;
-    margin: 5px;
-    padding: 15px;
-    border: 2px solid #2a2a2a;
-    border-radius: 0px; /* Absolutely no rounding */
-    min-width: 120px; /* Ensure buttons are wide enough */
+    color: #777777;
+    margin: 20px;
+    padding: 32px;
+    border: 1px solid #333333;
+    border-radius: 0px;
+    min-width: 180px;
+    min-height: 180px;
+    background-repeat: no-repeat;
+    background-position: center 48px;
+    background-size: 54px;
 }
 
 button:focus {
-    background-color: #1c1c1c;
-    border-color: #ffffff; /* White border on focus */
+    background-color: #181818;
+    border-color: #ffffff;
     color: #ffffff;
     outline: none;
 }
 
 button:hover {
-    background-color: #2a2a2a;
-    border-color: #e0e0e0; /* Light grey border on hover */
+    background-color: #1c1c1c;
+    border-color: #e0e0e0;
     color: #ffffff;
 }

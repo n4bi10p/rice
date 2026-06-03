@@ -13,7 +13,7 @@ PanelWindow {
         right: true
     }
     margins {
-        top: 32
+        top: 0
         right: 0
     }
 
@@ -80,6 +80,70 @@ PanelWindow {
         refreshSoon.restart()
     }
 
+    function dismissNotification(id) {
+        const item = controlCenter.notifications.find(n => n.id === id)
+        if (item && item.notification && item.notification.dismiss) {
+            try {
+                item.notification.dismiss()
+            } catch(e) {
+                console.warn("Failed to dismiss notification:", e)
+            }
+        }
+        controlCenter.notifications = controlCenter.notifications.filter(n => n.id !== id)
+    }
+
+    function hideNotificationPopup(id) {
+        controlCenter.notifications = controlCenter.notifications.map(n => {
+            if (n.id !== id)
+                return n
+
+            const updated = Object.assign({}, n)
+            updated.shownInPopup = false
+            return updated
+        })
+    }
+
+    function focusNotificationSource(item) {
+        const source = (item.desktopEntry || item.appName || "").trim()
+        if (source.length === 0)
+            return
+
+        const cleaned = source.replace(/\.desktop$/i, "").replace(/[^A-Za-z0-9._-]/g, ".*")
+        if (cleaned.length === 0)
+            return
+
+        focusApp.command = ["hyprctl", "dispatch", "focuswindow", "class:(" + cleaned + ")"]
+        focusApp.running = false
+        focusApp.running = true
+    }
+
+    function openNotification(index) {
+        const item = controlCenter.notifications[index]
+        if (!item)
+            return
+
+        const notification = item.notification
+        if (notification && notification.actions) {
+            for (let i = 0; i < notification.actions.length; i++) {
+                const action = notification.actions[i]
+                if (action.identifier === "default") {
+                    action.invoke()
+                    controlCenter.dismissNotification(item.id)
+                    return
+                }
+            }
+        }
+
+        controlCenter.focusNotificationSource(item)
+        controlCenter.dismissNotification(item.id)
+    }
+
+    function openNotificationById(id) {
+        const index = controlCenter.notifications.findIndex(n => n.id === id)
+        if (index >= 0)
+            controlCenter.openNotification(index)
+    }
+
     Rectangle {
         anchors.fill: parent
         color: "#0a0a0a"
@@ -126,6 +190,7 @@ PanelWindow {
     Process { id: setBrightness; running: false }
     Process { id: lockScreen; command: ["hyprlock"]; running: false }
     Process { id: openPowerMenu; command: ["wlogout"]; running: false }
+    Process { id: focusApp; running: false }
 
     NotificationServer {
         id: notificationServer
@@ -135,10 +200,13 @@ PanelWindow {
         onNotification: (notification) => {
             const item = {
                 id: notification.id ? notification.id.toString() : Date.now().toString(),
+                notification: notification,
                 appName: notification.appName || "System",
+                desktopEntry: notification.desktopEntry || "",
                 title: notification.summary || "Notification",
                 body: notification.body || "",
-                image: notification.image || notification.appIcon || ""
+                image: notification.image || notification.appIcon || "",
+                shownInPopup: true
             }
             controlCenter.notifications = [item].concat(controlCenter.notifications).slice(0, 30)
         }
@@ -311,6 +379,7 @@ PanelWindow {
                         color: "#111111"
                         border.color: "#2a2a2a"
                         border.width: 1
+                        property int sourceIndex: index
 
                         RowLayout {
                             anchors.fill: parent
@@ -353,6 +422,12 @@ PanelWindow {
                                     maximumLineCount: 2
                                 }
                             }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: controlCenter.openNotification(sourceIndex)
                         }
                     }
                 }
@@ -499,22 +574,30 @@ PanelWindow {
             horizontalAlignment: Text.AlignHCenter
         }
 
-        Rectangle {
+        Item {
             id: track
             Layout.fillWidth: true
-            height: 4
-            color: "#1c1c1c"
-            clip: true
+            Layout.preferredHeight: 28
 
             Rectangle {
-                height: parent.height
-                width: parent.width * Math.max(0, Math.min(1, value))
+                id: rail
+                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width
+                height: 6
+                color: "#1c1c1c"
+            }
+
+            Rectangle {
+                anchors.left: rail.left
+                anchors.verticalCenter: rail.verticalCenter
+                height: rail.height
+                width: rail.width * Math.max(0, Math.min(1, value))
                 color: "#e0e0e0"
             }
 
             Rectangle {
-                width: 10
-                height: 10
+                width: 8
+                height: 26
                 x: Math.max(0, Math.min(parent.width - width, (parent.width * Math.max(0, Math.min(1, value))) - (width / 2)))
                 anchors.verticalCenter: parent.verticalCenter
                 color: "#e0e0e0"
