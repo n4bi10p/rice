@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
+import Quickshell.Services.Notifications
 
 PanelWindow {
     id: controlCenter
@@ -12,8 +13,8 @@ PanelWindow {
         right: true
     }
     margins {
-        top: 38
-        right: 8
+        top: 32
+        right: 0
     }
 
     implicitWidth: 336
@@ -33,6 +34,9 @@ PanelWindow {
     property int currentBrightness: 50
     property int audioVolume: 0
     property bool audioMuted: false
+    property string userName: "user"
+    property string hostName: "host"
+    property var notifications: []
 
     function toggle() {
         controlCenter.visible = !controlCenter.visible
@@ -90,7 +94,13 @@ PanelWindow {
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    const state = JSON.parse(text.trim())
+                    const rawState = text.trim()
+                    if (!rawState.startsWith("{"))
+                        return
+
+                    const state = JSON.parse(rawState)
+                    controlCenter.userName = state.userName || "user"
+                    controlCenter.hostName = state.hostName || "host"
                     controlCenter.wifiEnabled = !!state.wifiEnabled
                     controlCenter.wifiSsid = state.wifiSsid || "Disconnected"
                     controlCenter.btEnabled = !!state.btEnabled
@@ -117,6 +127,23 @@ PanelWindow {
     Process { id: lockScreen; command: ["hyprlock"]; running: false }
     Process { id: openPowerMenu; command: ["wlogout"]; running: false }
 
+    NotificationServer {
+        id: notificationServer
+        bodySupported: true
+        imageSupported: true
+
+        onNotification: (notification) => {
+            const item = {
+                id: notification.id ? notification.id.toString() : Date.now().toString(),
+                appName: notification.appName || "System",
+                title: notification.summary || "Notification",
+                body: notification.body || "",
+                image: notification.image || notification.appIcon || ""
+            }
+            controlCenter.notifications = [item].concat(controlCenter.notifications).slice(0, 30)
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 12
@@ -128,7 +155,7 @@ PanelWindow {
             spacing: 8
 
             Text {
-                text: "▲ TERMINAL NOIR"
+                text: "▲ " + controlCenter.userName + "@" + controlCenter.hostName
                 color: "#ffffff"
                 font.family: "JetBrains Mono"
                 font.bold: true
@@ -227,7 +254,7 @@ PanelWindow {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 18
                     Text {
-                        text: "0 NOTIFICATIONS"
+                        text: controlCenter.notifications.length + " NOTIFICATIONS"
                         color: "#888888"
                         font.family: "JetBrains Mono"
                         font.bold: true
@@ -235,13 +262,20 @@ PanelWindow {
                         Layout.fillWidth: true
                     }
                     Text {
-                        text: ""
+                        text: controlCenter.notifications.length > 0 ? "" : ""
                         color: "#888888"
                         font.pixelSize: 13
+                        MouseArea {
+                            anchors.fill: parent
+                            enabled: controlCenter.notifications.length > 0
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: controlCenter.notifications = []
+                        }
                     }
                 }
 
                 Item {
+                    visible: controlCenter.notifications.length === 0
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Text {
@@ -253,12 +287,74 @@ PanelWindow {
                 }
 
                 Text {
+                    visible: controlCenter.notifications.length === 0
                     Layout.fillWidth: true
                     text: "No new notifications"
                     color: "#555555"
                     font.family: "JetBrains Mono"
                     font.pixelSize: 11
                     horizontalAlignment: Text.AlignHCenter
+                }
+
+                ListView {
+                    id: notificationList
+                    visible: controlCenter.notifications.length > 0
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    spacing: 6
+                    model: controlCenter.notifications
+
+                    delegate: Rectangle {
+                        width: notificationList.width
+                        height: Math.max(52, notificationText.implicitHeight + 20)
+                        color: "#111111"
+                        border.color: "#2a2a2a"
+                        border.width: 1
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 10
+
+                            Text {
+                                text: ""
+                                color: "#888888"
+                                font.pixelSize: 14
+                                Layout.alignment: Qt.AlignTop
+                                Layout.preferredWidth: 18
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            ColumnLayout {
+                                id: notificationText
+                                Layout.fillWidth: true
+                                spacing: 3
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: modelData.title
+                                    color: "#e0e0e0"
+                                    font.family: "JetBrains Mono"
+                                    font.bold: true
+                                    font.pixelSize: 11
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 1
+                                }
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: modelData.body || modelData.appName
+                                    color: "#888888"
+                                    font.family: "JetBrains Mono"
+                                    font.pixelSize: 10
+                                    wrapMode: Text.Wrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -414,6 +510,16 @@ PanelWindow {
                 height: parent.height
                 width: parent.width * Math.max(0, Math.min(1, value))
                 color: "#e0e0e0"
+            }
+
+            Rectangle {
+                width: 10
+                height: 10
+                x: Math.max(0, Math.min(parent.width - width, (parent.width * Math.max(0, Math.min(1, value))) - (width / 2)))
+                anchors.verticalCenter: parent.verticalCenter
+                color: "#e0e0e0"
+                border.color: "#0a0a0a"
+                border.width: 1
             }
 
             MouseArea {

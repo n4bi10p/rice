@@ -111,6 +111,7 @@
 
     "custom/notification": {
         "format": "<span color='#888888'></span>",
+        "on-click": "quickshell ipc call controlcenter toggle",
         "tooltip": false
     }
 }

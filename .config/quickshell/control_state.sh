@@ -4,6 +4,9 @@ json_escape() {
     printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g; s/\t/ /g'
 }
 
+user_name=$(id -un 2>/dev/null || printf '%s' "${USER:-user}")
+host_name=$(hostname 2>/dev/null || printf 'host')
+
 wifi_radio=$(nmcli radio wifi 2>/dev/null || true)
 wifi_enabled=false
 if [ "$wifi_radio" = "enabled" ]; then
@@ -53,7 +56,9 @@ if [ "$wifi_enabled" = false ] && [ "$bt_enabled" = false ]; then
     airplane_mode=true
 fi
 
-printf '{"wifiEnabled":%s,"wifiSsid":"%s","btEnabled":%s,"brightness":%s,"airplaneMode":%s,"audioVolume":%s,"audioMuted":%s}\n' \
+printf '{"userName":"%s","hostName":"%s","wifiEnabled":%s,"wifiSsid":"%s","btEnabled":%s,"brightness":%s,"airplaneMode":%s,"audioVolume":%s,"audioMuted":%s}\n' \
+    "$(json_escape "$user_name")" \
+    "$(json_escape "$host_name")" \
     "$wifi_enabled" \
     "$(json_escape "$wifi_ssid")" \
     "$bt_enabled" \

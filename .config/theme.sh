@@ -49,13 +49,6 @@ restart_waybar() {
     echo "Waybar restarted."
 }
 
-# Function to restart Dunst
-restart_dunst() {
-    pkill dunst
-    dunst &
-    echo "Dunst restarted."
-}
-
 # Function to restart Quickshell
 restart_quickshell() {
     pkill quickshell
@@ -71,7 +64,6 @@ set_wallpaper
 set_sddm_wallpaper
 
 restart_waybar
-restart_dunst
 restart_quickshell
 
 echo "Rice settings applied."

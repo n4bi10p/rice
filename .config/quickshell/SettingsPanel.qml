@@ -23,7 +23,7 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
     property string currentTab: "Quick"
-    property string wallpaperPath: settingsPanel.localPath("../wall/catwall.png")
+    property string wallpaperPath: Quickshell.env("HOME") + "/.config/wall/catwall.png"
     property var tabs: [
         { name: "Quick", icon: "" },
         { name: "General", icon: "" },

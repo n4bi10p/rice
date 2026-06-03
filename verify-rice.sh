@@ -36,7 +36,7 @@ else
 fi
 
 # 3. Check runtime tools used by the rice
-for TOOL in quickshell rofi swaybg dunst nmcli rfkill brightnessctl wpctl; do
+for TOOL in quickshell rofi swaybg nmcli rfkill brightnessctl wpctl; do
     if command -v "$TOOL" > /dev/null; then
         TOOL_PATH=$(command -v "$TOOL")
         echo "✅ PASS: $TOOL found at $TOOL_PATH"
@@ -46,7 +46,6 @@ for TOOL in quickshell rofi swaybg dunst nmcli rfkill brightnessctl wpctl; do
             quickshell) echo "   FIX: yay -S quickshell-git" ;;
             rofi) echo "   FIX: sudo pacman -S rofi-wayland" ;;
             swaybg) echo "   FIX: sudo pacman -S swaybg" ;;
-            dunst) echo "   FIX: sudo pacman -S dunst" ;;
             nmcli) echo "   FIX: sudo pacman -S networkmanager" ;;
             rfkill) echo "   FIX: sudo pacman -S util-linux" ;;
             brightnessctl) echo "   FIX: sudo pacman -S brightnessctl" ;;
