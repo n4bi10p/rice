@@ -22,8 +22,9 @@ PanelWindow {
     WlrLayershell.namespace: "settings-panel"
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
+    property var settings: null
     property string currentTab: "Quick"
-    property string wallpaperPath: Quickshell.env("HOME") + "/.config/wall/catwall.png"
+    property string fallbackWallpaperPath: Quickshell.env("HOME") + "/.config/wall/catwall.png"
     property var tabs: [
         { name: "Quick", icon: "" },
         { name: "General", icon: "" },
@@ -50,10 +51,39 @@ PanelWindow {
         return resolved.startsWith("file://") ? decodeURIComponent(resolved.substring(7)) : resolved
     }
 
+    function currentWallpaperPath() {
+        return settings ? settings.wallpaperPath : fallbackWallpaperPath
+    }
+
+    function setSetting(name, value) {
+        if (!settings)
+            return
+
+        settings[name] = value
+        settings.save()
+    }
+
+    function applyCurrentWallpaper() {
+        applyWallpaper.command = ["sh", "-c", "pkill swaybg; swaybg -i \"$1\" -m fill >/tmp/swaybg.log 2>&1 &", "sh", currentWallpaperPath()]
+        applyWallpaper.running = false
+        applyWallpaper.running = true
+    }
+
+    function applyBlurSetting() {
+        if (!settings)
+            return
+
+        applyBlur.command = ["hyprctl", "keyword", "decoration:blur:enabled", settings.blurEnabled ? "true" : "false"]
+        applyBlur.running = false
+        applyBlur.running = true
+    }
+
     Process { id: reloadShell; command: ["quickshell", "ipc", "call", "controlcenter", "toggle"]; running: false }
     Process { id: restartWaybar; command: ["sh", "-c", "pkill waybar; waybar >/tmp/waybar.log 2>&1 &"]; running: false }
-    Process { id: applyWallpaper; command: ["sh", "-c", "pkill swaybg; swaybg -i ~/.config/wall/catwall.png -m fill >/tmp/swaybg.log 2>&1 &"]; running: false }
-    Process { id: lockScreen; command: ["hyprlock"]; running: false }
+    Process { id: applyWallpaper; running: false }
+    Process { id: applyBlur; running: false }
+    Process { id: reloadHyprland; command: ["hyprctl", "reload"]; running: false }
+    Process { id: lockScreen; command: ["hyprlock", "--immediate-render", "--no-fade-in"]; running: false }
 
     Rectangle {
         anchors.fill: parent
@@ -243,7 +273,7 @@ PanelWindow {
 
                         Image {
                             anchors.fill: parent
-                            source: "file://" + settingsPanel.wallpaperPath
+                            source: "file://" + settingsPanel.currentWallpaperPath()
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
                         }
@@ -253,10 +283,16 @@ PanelWindow {
                         Layout.fillWidth: true
                         spacing: 10
 
+                        TextInputLine {
+                            title: "Wallpaper Path"
+                            value: settingsPanel.currentWallpaperPath()
+                            onCommitted: (text) => settingsPanel.setSetting("wallpaperPath", text)
+                        }
+
                         ActionButton {
                             icon: "󰸉"
                             label: "Apply Wallpaper"
-                            onClicked: { applyWallpaper.running = false; applyWallpaper.running = true }
+                            onClicked: settingsPanel.applyCurrentWallpaper()
                         }
                         ActionButton {
                             icon: ""
@@ -267,10 +303,17 @@ PanelWindow {
                 }
 
                 SectionTitle { icon: ""; title: "Theme" }
-                SegmentedRow { title: "Icons"; options: ["Filled", "Outlined", "Sharp", "Two-Tone"]; selectedIndex: 2 }
-                ToggleLine { title: "Colorize Terminal"; subtitle: "Use generated colors in terminal themes"; checked: true }
-                ToggleLine { title: "Dark Mode"; subtitle: "Keep surfaces black and high contrast"; checked: true }
-                SegmentedRow { title: "Bar Style"; options: ["Floating", "Modules", "Islands", "Full"]; selectedIndex: 0 }
+                ToggleLine {
+                    title: "Hyprland Blur"
+                    subtitle: "Apply live compositor blur for translucent overlays"
+                    checked: settingsPanel.settings ? settingsPanel.settings.blurEnabled : true
+                    onToggled: (value) => {
+                        settingsPanel.setSetting("blurEnabled", value)
+                        settingsPanel.applyBlurSetting()
+                    }
+                }
+                ToggleLine { title: "Dark Mode"; subtitle: "Terminal Noir stays monochrome and high contrast"; checked: true; locked: true }
+                ToggleLine { title: "Sharp Corners"; subtitle: "0px radius across shell surfaces"; checked: true; locked: true }
             }
         }
     }
@@ -282,8 +325,9 @@ PanelWindow {
             InfoLine { title: "Main Font"; value: "JetBrains Mono" }
             InfoLine { title: "Mono Font"; value: "JetBrains Mono Nerd Font" }
             SectionTitle { icon: "◼"; title: "Geometry" }
-            ToggleLine { title: "Sharp Corners"; subtitle: "0px radius across shell surfaces"; checked: true }
-            ToggleLine { title: "No Blur"; subtitle: "Disable visual blur and shadows"; checked: true }
+            InfoLine { title: "Corners"; value: "0px" }
+            InfoLine { title: "Borders"; value: "1px" }
+            InfoLine { title: "Palette"; value: "Monochrome" }
         }
     }
 
@@ -291,9 +335,27 @@ PanelWindow {
         id: barPage
         PageColumn {
             SectionTitle { icon: "▰"; title: "Bar" }
-            SegmentedRow { title: "Position"; options: ["Top", "Bottom"]; selectedIndex: 0 }
-            SegmentedRow { title: "Workspaces"; options: ["1-5", "1-9"]; selectedIndex: 0 }
+            InfoLine { title: "Position"; value: "Top" }
+            InfoLine { title: "Workspaces"; value: "1-5" }
             InfoLine { title: "Height"; value: "32px" }
+            ToggleLine {
+                title: "Network Module"
+                subtitle: "Persisted preference for the Waybar network block"
+                checked: settingsPanel.settings ? settingsPanel.settings.barNetworkEnabled : true
+                onToggled: (value) => settingsPanel.setSetting("barNetworkEnabled", value)
+            }
+            ToggleLine {
+                title: "Audio Module"
+                subtitle: "Persisted preference for the Waybar audio block"
+                checked: settingsPanel.settings ? settingsPanel.settings.barAudioEnabled : true
+                onToggled: (value) => settingsPanel.setSetting("barAudioEnabled", value)
+            }
+            ToggleLine {
+                title: "Bluetooth Module"
+                subtitle: "Persisted preference for the Waybar Bluetooth block"
+                checked: settingsPanel.settings ? settingsPanel.settings.barBluetoothEnabled : true
+                onToggled: (value) => settingsPanel.setSetting("barBluetoothEnabled", value)
+            }
         }
     }
 
@@ -301,10 +363,36 @@ PanelWindow {
         id: modulesPage
         PageColumn {
             SectionTitle { icon: ""; title: "Modules" }
-            ToggleLine { title: "Network"; subtitle: "Waybar opens the Quickshell control center"; checked: true }
-            ToggleLine { title: "Audio"; subtitle: "Uses wpctl for stable volume state"; checked: true }
-            ToggleLine { title: "Bluetooth"; subtitle: "Uses rfkill for radio toggles"; checked: true }
-            ToggleLine { title: "Stats Widgets"; subtitle: "Hardware and software dashboard"; checked: true }
+            ToggleLine {
+                title: "Quick Details"
+                subtitle: "Enable in-panel Wi-Fi and Bluetooth detail views"
+                checked: settingsPanel.settings ? settingsPanel.settings.quickPanelDetailsEnabled : true
+                onToggled: (value) => settingsPanel.setSetting("quickPanelDetailsEnabled", value)
+            }
+            ToggleLine {
+                title: "Media Widget"
+                subtitle: "Bottom-left MPRIS player card"
+                checked: settingsPanel.settings ? settingsPanel.settings.mediaWidgetEnabled : true
+                onToggled: (value) => settingsPanel.setSetting("mediaWidgetEnabled", value)
+            }
+            ToggleLine {
+                title: "Stats Widget"
+                subtitle: "Bottom-right hardware and software dashboard"
+                checked: settingsPanel.settings ? settingsPanel.settings.statsWidgetEnabled : true
+                onToggled: (value) => settingsPanel.setSetting("statsWidgetEnabled", value)
+            }
+            ToggleLine {
+                title: "Notification Popups"
+                subtitle: "Quickshell handles notification toasts"
+                checked: settingsPanel.settings ? settingsPanel.settings.notificationPopupsEnabled : true
+                onToggled: (value) => settingsPanel.setSetting("notificationPopupsEnabled", value)
+            }
+            ToggleLine {
+                title: "Clock Calendar"
+                subtitle: "Waybar clock opens the calendar panel"
+                checked: settingsPanel.settings ? settingsPanel.settings.calendarEnabled : true
+                onToggled: (value) => settingsPanel.setSetting("calendarEnabled", value)
+            }
         }
     }
 
@@ -315,6 +403,7 @@ PanelWindow {
             InfoLine { title: "Window Manager"; value: "Hyprland" }
             InfoLine { title: "Shell"; value: "Quickshell" }
             InfoLine { title: "Launcher"; value: "Rofi" }
+            ActionButton { icon: ""; label: "Reload Hyprland"; onClicked: { reloadHyprland.running = false; reloadHyprland.running = true } }
             ActionButton { icon: ""; label: "Lock"; onClicked: { lockScreen.running = false; lockScreen.running = true } }
         }
     }
@@ -325,8 +414,12 @@ PanelWindow {
             SectionTitle { icon: ""; title: "Keybinds" }
             InfoLine { title: "Terminal"; value: "SUPER + T" }
             InfoLine { title: "Launcher"; value: "SUPER + Space" }
+            InfoLine { title: "Clipboard"; value: "SUPER + V" }
+            InfoLine { title: "Float"; value: "SUPER + SHIFT + V" }
             InfoLine { title: "Lock"; value: "SUPER + CTRL + L" }
             InfoLine { title: "Logout"; value: "SUPER + M" }
+            InfoLine { title: "Audio"; value: "Fn + F1/F2/F3" }
+            InfoLine { title: "Brightness"; value: "Fn + F9/F10" }
         }
     }
 
@@ -377,13 +470,15 @@ PanelWindow {
     }
 
     component ToggleLine: Rectangle {
+        signal toggled(bool checked)
         property string title: ""
         property string subtitle: ""
         property bool checked: false
+        property bool locked: false
         Layout.fillWidth: true
         Layout.preferredHeight: 54
-        color: "#101010"
-        border.color: "#1c1c1c"
+        color: toggleMouse.containsMouse && !locked ? "#141414" : "#101010"
+        border.color: locked ? "#151515" : "#1c1c1c"
         border.width: 1
 
         RowLayout {
@@ -410,8 +505,18 @@ PanelWindow {
                     x: checked ? parent.width - width - 3 : 3
                     anchors.verticalCenter: parent.verticalCenter
                     color: checked ? "#000000" : "#888888"
+                    Behavior on x { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
                 }
             }
+        }
+
+        MouseArea {
+            id: toggleMouse
+            anchors.fill: parent
+            hoverEnabled: true
+            enabled: !locked
+            cursorShape: locked ? Qt.ArrowCursor : Qt.PointingHandCursor
+            onClicked: toggled(!checked)
         }
     }
 
@@ -470,6 +575,45 @@ PanelWindow {
             anchors.margins: 12
             Text { text: title; color: "#888888"; font.family: "JetBrains Mono"; font.pixelSize: 11; Layout.fillWidth: true }
             Text { text: value; color: "#e0e0e0"; font.family: "JetBrains Mono"; font.bold: true; font.pixelSize: 11 }
+        }
+    }
+
+    component TextInputLine: Rectangle {
+        signal committed(string text)
+        property string title: ""
+        property string value: ""
+        Layout.fillWidth: true
+        Layout.preferredHeight: 54
+        color: "#101010"
+        border.color: input.activeFocus ? "#888888" : "#1c1c1c"
+        border.width: 1
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 12
+
+            Text {
+                text: title
+                color: "#888888"
+                font.family: "JetBrains Mono"
+                font.pixelSize: 11
+                Layout.preferredWidth: 120
+            }
+
+            TextInput {
+                id: input
+                Layout.fillWidth: true
+                text: value
+                color: "#e0e0e0"
+                selectionColor: "#e0e0e0"
+                selectedTextColor: "#000000"
+                font.family: "JetBrains Mono"
+                font.pixelSize: 11
+                clip: true
+                onAccepted: committed(text)
+                onEditingFinished: committed(text)
+            }
         }
     }
 }

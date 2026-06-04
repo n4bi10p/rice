@@ -8,27 +8,46 @@ import Quickshell.Io
 ShellRoot {
     id: root
 
+    SettingsStore {
+        id: appSettings
+    }
+
     // --- IPC SERVER ---
     IpcHandler {
         target: "controlcenter"
         function toggle() {
             ccPanel.toggle()
         }
+        function network() {
+            ccPanel.openFromBar("network")
+        }
+        function bluetooth() {
+            ccPanel.openFromBar("bluetooth")
+        }
+        function audio() {
+            ccPanel.openFromBar("audio")
+        }
+        function notifications() {
+            ccPanel.openFromBar("notifications")
+        }
     }
 
     IpcHandler {
         target: "calendar"
         function toggle() {
-            calendarPanel.toggle()
+            if (appSettings.calendarEnabled)
+                calendarPanel.toggle()
         }
     }
 
     ControlCenter {
         id: ccPanel
+        settings: appSettings
         onRequestSettings: settingsPanel.toggle()
     }
 
     NotificationPopups {
+        enabled: appSettings.notificationPopupsEnabled
         notifications: ccPanel.notifications
         onOpenNotification: (id) => ccPanel.openNotificationById(id)
         onDismissNotification: (id) => ccPanel.dismissNotification(id)
@@ -41,6 +60,7 @@ ShellRoot {
 
     SettingsPanel {
         id: settingsPanel
+        settings: appSettings
     }
 
     function localPath(fileName) {
@@ -92,6 +112,7 @@ ShellRoot {
         anchors { bottom: true; left: true }
         margins { bottom: 40; left: 40 }
         implicitWidth: 320; implicitHeight: 120; color: "#050505"
+        visible: appSettings.mediaWidgetEnabled
         WlrLayershell.layer: WlrLayer.Bottom
         WlrLayershell.namespace: "spotify-widget"
         Rectangle { anchors.fill: parent; color: "transparent"; border.color: "#1a1a1a"; border.width: 1 }
@@ -126,6 +147,7 @@ ShellRoot {
         anchors { bottom: true; right: true }
         margins { bottom: 40; right: 40 }
         implicitWidth: 350; implicitHeight: 180; color: "transparent"
+        visible: appSettings.statsWidgetEnabled
         WlrLayershell.layer: WlrLayer.Bottom
         WlrLayershell.namespace: "stats-widget"
 

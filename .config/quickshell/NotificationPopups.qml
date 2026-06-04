@@ -7,6 +7,7 @@ PanelWindow {
     id: root
 
     property var notifications: []
+    property bool enabled: true
     readonly property var visibleNotifications: notifications.filter(n => n.shownInPopup).slice(0, 4)
 
     signal openNotification(string id)
@@ -38,7 +39,7 @@ PanelWindow {
     implicitWidth: 400
     implicitHeight: 420
     color: "transparent"
-    visible: visibleNotifications.length > 0
+    visible: enabled && visibleNotifications.length > 0
     exclusionMode: ExclusionMode.Ignore
 
     WlrLayershell.layer: WlrLayer.Top

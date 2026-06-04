@@ -87,7 +87,7 @@
         "format-wifi": "<span color='#888888'></span>  <span color='#e0e0e0'>{essid}</span>",
         "format-ethernet": "<span color='#888888'>󰈀</span>  <span color='#e0e0e0'>WIRED</span>",
         "format-disconnected": "<span color='#888888'>󰤮</span>  <span color='#e0e0e0'>OFFLINE</span>",
-        "on-click": "quickshell ipc call controlcenter toggle",
+        "on-click": "quickshell ipc call controlcenter network",
         "tooltip": false
     },
 
@@ -99,20 +99,20 @@
     "pulseaudio": {
         "format": "<span color='#888888'></span>",
         "format-muted": "<span color='#888888'>󰝟</span>",
-        "on-click": "quickshell ipc call controlcenter toggle",
+        "on-click": "quickshell ipc call controlcenter audio",
         "tooltip": false
     },
 
     "bluetooth": {
         "format": "<span color='#888888'></span>",
         "format-disabled": "<span color='#888888'>󰂲</span>",
-        "on-click": "quickshell ipc call controlcenter toggle",
+        "on-click": "quickshell ipc call controlcenter bluetooth",
         "tooltip": false
     },
 
     "custom/notification": {
         "format": "<span color='#888888'></span>",
-        "on-click": "quickshell ipc call controlcenter toggle",
+        "on-click": "quickshell ipc call controlcenter notifications",
         "tooltip": false
     }
 }
