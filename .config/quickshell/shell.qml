@@ -40,6 +40,13 @@ ShellRoot {
         }
     }
 
+    IpcHandler {
+        target: "clipboard"
+        function toggle() {
+            clipboardPanel.toggle()
+        }
+    }
+
     ControlCenter {
         id: ccPanel
         settings: appSettings
@@ -56,6 +63,10 @@ ShellRoot {
 
     CalendarPanel {
         id: calendarPanel
+    }
+
+    ClipboardPanel {
+        id: clipboardPanel
     }
 
     SettingsPanel {
