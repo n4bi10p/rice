@@ -97,7 +97,15 @@ for file in \
     ".config/swayosd/config.toml" \
     ".config/swayosd/style.css" \
     "sddm/terminal-noir/Main.qml" \
-    "sddm/terminal-noir/theme.conf"; do
+    "sddm/terminal-noir/metadata.desktop" \
+    "sddm/terminal-noir/Themes/terminal-noir.conf" \
+    "sddm/terminal-noir/Components/Clock.qml" \
+    "sddm/terminal-noir/Components/LoginForm.qml" \
+    "sddm/terminal-noir/Components/Input.qml" \
+    "sddm/terminal-noir/Components/SystemButtons.qml" \
+    "sddm/terminal-noir/Components/SessionButton.qml" \
+    "sddm/terminal-noir/Assets/User.svg" \
+    "sddm/terminal-noir/Assets/Password.svg"; do
     require_file "$file"
 done
 
@@ -136,10 +144,17 @@ require_contains ".config/hypr/windowrules.conf" 'match:class \^\(kitty\)\$, opa
 require_contains ".config/Code/User/settings.json" 'workbench\.colorCustomizations' "Code settings include monochrome color customizations"
 require_contains ".config/vim/vimrc" 'colorscheme terminal-noir' "vim uses Terminal Noir colorscheme"
 require_contains ".config/spicetify/Themes/TerminalNoir/user.css" 'rgba\(10, 10, 10' "spicetify theme uses translucent monochrome surfaces"
-require_contains "sddm/terminal-noir/Main.qml" 'background-blur\.png' "SDDM theme uses generated blurred wallpaper"
-require_contains "sddm/terminal-noir/theme.conf" 'Background=.*/catwall\.png|Background=background\.png' "SDDM theme declares wallpaper background"
+require_contains "sddm/terminal-noir/Main.qml" 'import "Components"' "SDDM theme uses astronaut-style component directory"
+require_contains "sddm/terminal-noir/Main.qml" 'MultiEffect' "SDDM theme uses QtQuick blur effect"
+require_contains "sddm/terminal-noir/Main.qml" 'config\.Background' "SDDM theme reads background from theme config"
+require_contains "sddm/terminal-noir/metadata.desktop" 'ConfigFile=Themes/terminal-noir\.conf' "SDDM metadata points at Terminal Noir config"
+require_contains "sddm/terminal-noir/metadata.desktop" 'Theme-Id=terminal-noir' "SDDM metadata declares terminal-noir id"
+require_contains "sddm/terminal-noir/Themes/terminal-noir.conf" 'Background="background\.png"' "SDDM theme declares wallpaper background"
+require_contains "sddm/terminal-noir/Themes/terminal-noir.conf" 'PartialBlur="true"' "SDDM theme enables partial blur"
 require_contains "scripts/install-sddm-theme.sh" 'terminal-noir\.conf' "SDDM installer writes Terminal Noir theme config"
 require_contains "scripts/install-sddm-theme.sh" 'magick|convert' "SDDM installer can generate blurred wallpaper"
+require_contains "scripts/install-sddm-theme.sh" '/etc/sddm\.conf' "SDDM installer updates main sddm.conf override"
+require_contains "scripts/install-sddm-theme.sh" 'Current=terminal-noir' "SDDM installer selects terminal-noir theme"
 require_contains "verify-rice.sh" 'scripts/pkg_core\.lst' "verify-rice reads package manifest"
 require_contains "verify-rice.sh" 'xdg-desktop-portal-hyprland' "verify-rice checks hyprland portal"
 require_contains "verify-rice.sh" 'hypridle' "verify-rice checks hypridle"
