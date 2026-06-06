@@ -1,0 +1,57 @@
+@define-color noir_bg #0b0b0b;
+@define-color noir_panel #111111;
+@define-color noir_surface #171717;
+@define-color noir_border #2a2a2a;
+@define-color noir_fg #f4f4f4;
+@define-color noir_muted #9a9a9a;
+@define-color noir_focus #ffffff;
+
+* {
+    outline-color: @noir_focus;
+}
+
+window,
+dialog,
+popover,
+menu,
+.background {
+    background-color: alpha(@noir_bg, 0.94);
+    color: @noir_fg;
+}
+
+headerbar,
+toolbar,
+notebook > header,
+treeview,
+list,
+viewport {
+    background-color: alpha(@noir_panel, 0.94);
+    color: @noir_fg;
+    border-color: @noir_border;
+}
+
+button,
+entry,
+combobox button,
+spinbutton,
+checkbutton,
+radiobutton {
+    background-image: none;
+    background-color: @noir_surface;
+    color: @noir_fg;
+    border: 1px solid @noir_border;
+    border-radius: 0;
+}
+
+button:hover,
+row:selected,
+selection {
+    background-color: @noir_fg;
+    color: @noir_bg;
+}
+
+label:disabled,
+button:disabled,
+entry:disabled {
+    color: @noir_muted;
+}

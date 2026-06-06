@@ -1,0 +1,7 @@
+[General]
+BrowseThroughArchives=true
+OpenExternallyCalledFolderInNewTab=true
+ShowFullPath=true
+
+[KFileDialog Settings]
+Places Icons Auto-resize=false

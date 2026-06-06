@@ -160,6 +160,27 @@ check_helpers() {
     check_file ".config/swayosd/style.css"
 }
 
+check_theme_configs() {
+    for path in \
+        ".gtkrc-2.0" \
+        ".config/gtk-3.0/settings.ini" \
+        ".config/gtk-3.0/gtk.css" \
+        ".config/gtk-4.0/settings.ini" \
+        ".config/gtk-4.0/gtk.css" \
+        ".config/xsettingsd/xsettingsd.conf" \
+        ".config/qt5ct/qt5ct.conf" \
+        ".config/qt5ct/colors/terminal-noir.conf" \
+        ".config/qt6ct/qt6ct.conf" \
+        ".config/qt6ct/colors/terminal-noir.conf" \
+        ".config/Kvantum/kvantum.kvconfig" \
+        ".config/Kvantum/TerminalNoir/TerminalNoir.kvconfig" \
+        ".config/Kvantum/TerminalNoir/TerminalNoir.svg" \
+        ".config/kdeglobals" \
+        ".config/dolphinrc"; do
+        check_file "$path"
+    done
+}
+
 check_live_session() {
     if command -v hyprctl >/dev/null 2>&1 && hyprctl version >/dev/null 2>&1; then
         pass "Hyprland socket reachable"
@@ -202,6 +223,7 @@ check_manifest
 check_font
 check_hyprland_config
 check_helpers
+check_theme_configs
 check_live_session
 
 info "=========================================="

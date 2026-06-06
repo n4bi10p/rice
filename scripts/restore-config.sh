@@ -108,6 +108,11 @@ restore_tree() {
 restore_tree "$backup_dir/.config" "$target_home/.config"
 restore_tree "$backup_dir/.local" "$target_home/.local"
 
+if [ -f "$backup_dir/.gtkrc-2.0" ]; then
+    run cp -a "$backup_dir/.gtkrc-2.0" "$target_home/.gtkrc-2.0"
+    printf 'restore: %s -> %s\n' "$backup_dir/.gtkrc-2.0" "$target_home/.gtkrc-2.0"
+fi
+
 if [ -d "$backup_dir/etc" ]; then
     if [ "$(id -u)" -ne 0 ]; then
         printf 'Skipping /etc restore because root is required.\n' >&2

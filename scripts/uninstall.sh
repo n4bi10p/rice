@@ -69,6 +69,7 @@ if [ "$skip_backup" -eq 0 ]; then
 fi
 
 managed_paths=(
+    ".gtkrc-2.0"
     ".config/hypr"
     ".config/waybar"
     ".config/quickshell"
@@ -76,6 +77,19 @@ managed_paths=(
     ".config/wlogout"
     ".config/kitty"
     ".config/swayosd"
+    ".config/gtk-3.0/settings.ini"
+    ".config/gtk-3.0/gtk.css"
+    ".config/gtk-4.0/settings.ini"
+    ".config/gtk-4.0/gtk.css"
+    ".config/xsettingsd/xsettingsd.conf"
+    ".config/qt5ct/qt5ct.conf"
+    ".config/qt5ct/colors/terminal-noir.conf"
+    ".config/qt6ct/qt6ct.conf"
+    ".config/qt6ct/colors/terminal-noir.conf"
+    ".config/Kvantum/kvantum.kvconfig"
+    ".config/Kvantum/TerminalNoir"
+    ".config/kdeglobals"
+    ".config/dolphinrc"
     ".config/vim/colors/terminal-noir.vim"
     ".config/terminal-noir"
     ".local/bin/tnctl"

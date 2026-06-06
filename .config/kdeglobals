@@ -1,0 +1,14 @@
+[General]
+TerminalApplication=kitty
+
+[Icons]
+Theme=Adwaita
+
+[KDE]
+LookAndFeelPackage=org.kde.breezedark.desktop
+
+[UiSettings]
+ColorScheme=BreezeDark
+
+[Wallet]
+Enabled=false

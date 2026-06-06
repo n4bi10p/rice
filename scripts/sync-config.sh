@@ -10,7 +10,7 @@ usage() {
     cat <<'USAGE'
 Usage: scripts/sync-config.sh [--dry-run] [--target-home PATH]
 
-Copies this repo's .config and .local trees into the target home directory.
+Copies this repo's .config, .local, and managed root dotfiles into the target home directory.
 Matching live paths are backed up under ~/.config/cfg_backups/terminal-noir-*.
 Unrelated files in the target directories are preserved.
 USAGE
@@ -91,6 +91,11 @@ for source_root in "$repo_root/.config" "$repo_root/.local"; do
     while IFS= read -r item; do
         sync_path "$item"
     done < <(find "$source_root" -mindepth 1 -maxdepth 1 | sort)
+done
+
+for rel in ".gtkrc-2.0"; do
+    [ -f "$repo_root/$rel" ] || continue
+    sync_path "$repo_root/$rel"
 done
 
 printf 'Done. Backups are under %s\n' "$backup_dir"

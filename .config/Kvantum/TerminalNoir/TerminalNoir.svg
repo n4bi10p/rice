@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" version="1.1">
+  <defs>
+    <style>
+      .bg { fill: #0b0b0b; }
+      .panel { fill: #171717; }
+      .edge { fill: #2a2a2a; }
+      .focus { fill: #f4f4f4; }
+      .clear { fill: #0b0b0b; fill-opacity: 0; }
+    </style>
+  </defs>
+  <rect id="button-normal" class="panel" x="0" y="0" width="16" height="16"/>
+  <rect id="button-normal-top" class="edge" x="0" y="0" width="16" height="1"/>
+  <rect id="button-normal-bottom" class="edge" x="0" y="15" width="16" height="1"/>
+  <rect id="button-normal-left" class="edge" x="0" y="0" width="1" height="16"/>
+  <rect id="button-normal-right" class="edge" x="15" y="0" width="1" height="16"/>
+  <rect id="button-focused" class="focus" x="20" y="0" width="16" height="16"/>
+  <rect id="button-pressed" class="focus" x="40" y="0" width="16" height="16"/>
+  <rect id="common-normal" class="panel" x="0" y="20" width="16" height="16"/>
+  <rect id="common-focused" class="focus" x="20" y="20" width="16" height="16"/>
+  <rect id="lineedit-normal" class="bg" x="40" y="20" width="16" height="16"/>
+  <rect id="lineedit-focused" class="panel" x="0" y="40" width="16" height="16"/>
+  <rect id="focus" class="focus" x="20" y="40" width="16" height="16"/>
+  <rect id="menu-normal" class="panel" x="40" y="40" width="16" height="16"/>
+  <rect id="menuitem-normal" class="clear" x="0" y="58" width="8" height="4"/>
+  <rect id="menuitem-focused" class="focus" x="12" y="58" width="8" height="4"/>
+</svg>

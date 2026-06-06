@@ -87,6 +87,7 @@ backup_path() {
 }
 
 managed_paths=(
+    ".gtkrc-2.0"
     ".config/hypr"
     ".config/waybar"
     ".config/quickshell"
@@ -94,6 +95,14 @@ managed_paths=(
     ".config/wlogout"
     ".config/kitty"
     ".config/swayosd"
+    ".config/gtk-3.0"
+    ".config/gtk-4.0"
+    ".config/xsettingsd"
+    ".config/qt5ct"
+    ".config/qt6ct"
+    ".config/Kvantum"
+    ".config/kdeglobals"
+    ".config/dolphinrc"
     ".config/vim"
     ".config/Code"
     ".config/Code - OSS"
