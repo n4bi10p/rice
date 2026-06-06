@@ -18,7 +18,7 @@ PanelWindow {
     }
 
     implicitWidth: 336
-    implicitHeight: detailPage === "" ? 640 : 760
+    implicitHeight: detailPage === "" ? 720 : 860
     color: "#0a0a0a"
     visible: false
     onVisibleChanged: if (visible) panelRoot.forceActiveFocus()
@@ -40,6 +40,7 @@ PanelWindow {
     property string userName: "user"
     property string hostName: "host"
     property var notifications: []
+    property bool doNotDisturb: false
     property string detailPage: ""
     property bool wifiBusy: false
     property bool bluetoothBusy: false
@@ -116,6 +117,18 @@ PanelWindow {
 
     function pctText(value) {
         return Number.isFinite(value) ? Math.round(value) + "%" : "0%"
+    }
+
+    function toggleDoNotDisturb() {
+        controlCenter.doNotDisturb = !controlCenter.doNotDisturb
+        if (!controlCenter.doNotDisturb)
+            return
+
+        controlCenter.notifications = controlCenter.notifications.map(n => {
+            const updated = Object.assign({}, n)
+            updated.shownInPopup = false
+            return updated
+        })
     }
 
     function setVolumeFromMouse(mouseX, trackWidth) {
@@ -492,7 +505,7 @@ PanelWindow {
                 title: notification.summary || "Notification",
                 body: notification.body || "",
                 image: notification.image || notification.appIcon || "",
-                shownInPopup: true
+                shownInPopup: !controlCenter.doNotDisturb
             }
             controlCenter.notifications = [item].concat(controlCenter.notifications).slice(0, 30)
         }
@@ -520,6 +533,11 @@ PanelWindow {
 
             HeaderButton { icon: ""; onClicked: controlCenter.pollState() }
             HeaderButton { icon: ""; onClicked: controlCenter.requestSettings() }
+            HeaderButton {
+                active: controlCenter.doNotDisturb
+                icon: controlCenter.doNotDisturb ? "" : ""
+                onClicked: controlCenter.toggleDoNotDisturb()
+            }
             HeaderButton { icon: ""; onClicked: { openPowerMenu.running = false; openPowerMenu.running = true } }
             HeaderButton { icon: ""; onClicked: controlCenter.closePanel() }
         }
@@ -529,11 +547,11 @@ PanelWindow {
             rowSpacing: 8
             columnSpacing: 8
             Layout.fillWidth: true
-            Layout.preferredHeight: 164
+            Layout.preferredHeight: 120
 
             ControlTile {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 78
+                Layout.preferredHeight: 56
                 active: controlCenter.wifiEnabled
                 icon: controlCenter.wifiEnabled ? "" : "󰤮"
                 title: "Network"
@@ -551,7 +569,7 @@ PanelWindow {
 
             ControlTile {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 78
+                Layout.preferredHeight: 56
                 active: controlCenter.btEnabled
                 icon: ""
                 title: "Bluetooth"
@@ -569,7 +587,7 @@ PanelWindow {
 
             ControlTile {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 78
+                Layout.preferredHeight: 56
                 active: !controlCenter.audioMuted && controlCenter.audioVolume > 0
                 icon: controlCenter.audioMuted || controlCenter.audioVolume === 0 ? "󰝟" : ""
                 title: "Audio"
@@ -584,7 +602,7 @@ PanelWindow {
 
             ControlTile {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 78
+                Layout.preferredHeight: 56
                 active: controlCenter.airplaneMode
                 icon: ""
                 title: "Airplane"
@@ -600,7 +618,7 @@ PanelWindow {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: controlCenter.detailPage === "" ? 240 : 380
+            Layout.preferredHeight: controlCenter.detailPage === "" ? 390 : 550
             color: "#0d0d0d"
             border.color: "#1c1c1c"
             border.width: 1
@@ -615,8 +633,8 @@ PanelWindow {
 
         ColumnLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 58
-            spacing: 14
+            Layout.preferredHeight: 52
+            spacing: 10
 
             SliderRow {
                 Layout.fillWidth: true
@@ -637,7 +655,7 @@ PanelWindow {
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 44
+            Layout.preferredHeight: 34
             spacing: 8
 
             FooterButton {
@@ -664,7 +682,7 @@ PanelWindow {
 
             RowLayout {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 18
+                Layout.preferredHeight: 28
                 Text {
                     text: controlCenter.notifications.length + " NOTIFICATIONS"
                     color: "#888888"
@@ -672,6 +690,12 @@ PanelWindow {
                     font.bold: true
                     font.pixelSize: 9
                     Layout.fillWidth: true
+                }
+                DetailButton {
+                    label: "DND"
+                    active: controlCenter.doNotDisturb
+                    Layout.preferredWidth: 46
+                    onClicked: controlCenter.toggleDoNotDisturb()
                 }
                 Text {
                     text: controlCenter.notifications.length > 0 ? "" : ""
@@ -1147,15 +1171,16 @@ PanelWindow {
     component HeaderButton: Rectangle {
         signal clicked()
         property string icon: ""
+        property bool active: false
         width: 22
         height: 22
-        color: mouse.containsMouse ? "#1c1c1c" : "transparent"
-        border.color: "transparent"
+        color: active ? "#e0e0e0" : (mouse.containsMouse ? "#1c1c1c" : "transparent")
+        border.color: active ? "#e0e0e0" : "transparent"
 
         Text {
             anchors.centerIn: parent
             text: icon
-            color: "#888888"
+            color: active ? "#000000" : "#888888"
             font.pixelSize: 13
         }
         MouseArea {
@@ -1180,14 +1205,14 @@ PanelWindow {
 
         RowLayout {
             anchors.fill: parent
-            anchors.margins: 10
-            spacing: 10
+            anchors.margins: 8
+            spacing: 8
 
             Text {
                 text: icon
                 color: active ? "#000000" : "#888888"
-                font.pixelSize: 18
-                Layout.preferredWidth: 24
+                font.pixelSize: 16
+                Layout.preferredWidth: 20
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
@@ -1202,7 +1227,7 @@ PanelWindow {
                     color: active ? "#000000" : "#e0e0e0"
                     font.family: "JetBrains Mono"
                     font.bold: true
-                    font.pixelSize: 12
+                    font.pixelSize: 11
                     elide: Text.ElideRight
                     maximumLineCount: 1
                 }
@@ -1212,7 +1237,7 @@ PanelWindow {
                     text: subtitle
                     color: active ? "#333333" : "#888888"
                     font.family: "JetBrains Mono"
-                    font.pixelSize: 10
+                    font.pixelSize: 9
                     elide: Text.ElideRight
                     maximumLineCount: 1
                 }
@@ -1308,7 +1333,7 @@ PanelWindow {
             anchors.centerIn: parent
             text: icon
             color: "#888888"
-            font.pixelSize: 16
+            font.pixelSize: 14
         }
 
         MouseArea {
