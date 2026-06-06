@@ -117,6 +117,10 @@ check_hyprland_config() {
 
 check_helpers() {
     for script in \
+        "scripts/install.sh" \
+        "scripts/backup-config.sh" \
+        "scripts/restore-config.sh" \
+        "scripts/uninstall.sh" \
         "scripts/sync-config.sh" \
         "scripts/install-sddm-theme.sh" \
         ".config/quickshell/control_state.sh" \

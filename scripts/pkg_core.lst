@@ -48,3 +48,30 @@ sddm|sddm|recommended|Display manager for Terminal Noir login theme
 magick|imagemagick|recommended|Generate blurred SDDM wallpaper
 swayosd-client|swayosd-git|recommended|Volume/brightness OSD
 swayosd-server|swayosd-git|recommended|Volume/brightness OSD daemon
+
+# HyDE-parity theming and desktop integration.
+nwg-look|nwg-look|recommended|GTK theme configuration utility
+qt5ct|qt5ct|recommended|Qt5 theme configuration utility
+qt6ct|qt6ct|recommended|Qt6 theme configuration utility
+kvantummanager|kvantum|recommended|Kvantum Qt theme manager
+kvantummanager|kvantum-qt5|recommended|Kvantum Qt5 compatibility
+/usr/lib/qt/plugins/platforms/libqwayland-generic.so|qt5-wayland|recommended|Qt5 Wayland platform support
+/usr/lib/qt6/plugins/platforms/libqwayland-generic.so|qt6-wayland|recommended|Qt6 Wayland platform support
+/usr/lib/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|recommended|GTK portal backend for file pickers
+xdg-user-dir|xdg-user-dirs|recommended|User directory helper
+wl-clip-persist|wl-clip-persist|recommended|Persist Wayland clipboard contents
+noto-fonts-emoji|noto-fonts-emoji|recommended|Emoji font coverage
+
+# HyDE-parity shell and utility tooling.
+zsh|zsh|recommended|Optional shell setup
+starship|starship|recommended|Optional shell prompt
+fzf|fzf|recommended|Fuzzy finder backend
+bat|bat|recommended|Preview-friendly cat replacement
+eza|eza|recommended|Modern ls replacement
+duf|duf|recommended|Disk usage summary
+checkupdates|pacman-contrib|recommended|Package update count
+wttrbar|wttrbar|recommended|Waybar weather provider
+
+# Optional hardware and display tools.
+ddcui|ddcui|recommended|External monitor brightness UI
+nwg-displays|nwg-displays|recommended|Wayland monitor layout utility
