@@ -1,0 +1,43 @@
+# Terminal Noir required/recommended runtime tools.
+# Format: command|package|level|description
+# level: required or recommended
+
+hyprland|hyprland|required|Hyprland compositor
+hyprctl|hyprland|required|Hyprland control utility
+waybar|waybar|required|Top status bar
+quickshell|quickshell-git|required|Control center, widgets, notifications
+rofi|rofi|required|Application launcher fallback
+kitty|kitty|required|Terminal emulator
+hyprlock|hyprlock|required|Lock screen
+wlogout|wlogout|required|Logout and power menu
+swaybg|swaybg|required|Static wallpaper daemon
+wl-copy|wl-clipboard|required|Wayland clipboard copy
+wl-paste|wl-clipboard|required|Wayland clipboard watcher
+cliphist|cliphist|required|Clipboard history backend
+nmcli|networkmanager|required|NetworkManager CLI
+rfkill|util-linux|required|Radio block/unblock control
+bluetoothctl|bluez-utils|required|Bluetooth CLI
+brightnessctl|brightnessctl|required|Brightness control
+wpctl|wireplumber|required|PipeWire volume control
+jq|jq|required|JSON parsing
+file|file|required|Clipboard MIME detection
+notify-send|libnotify|required|Desktop notifications
+
+/usr/lib/xdg-desktop-portal-hyprland|xdg-desktop-portal-hyprland|recommended|Hyprland portal backend
+/usr/lib/xdg-desktop-portal|xdg-desktop-portal|recommended|Portal dispatcher
+hypridle|hypridle|recommended|Idle, lock and DPMS daemon
+hyprsunset|hyprsunset|recommended|Blue light filter daemon
+/usr/lib/hyprpolkitagent|hyprpolkitagent|recommended|Hyprland-native polkit authentication agent
+playerctl|playerctl|recommended|MPRIS/media controls
+pamixer|pamixer|recommended|PulseAudio/PipeWire mixer fallback
+pavucontrol|pavucontrol|recommended|Audio control fallback UI
+blueman-applet|blueman|recommended|Bluetooth tray applet fallback
+nm-applet|network-manager-applet|recommended|Network tray applet fallback
+udiskie|udiskie|recommended|Removable media tray applet
+grim|grim|recommended|Screenshot capture
+slurp|slurp|recommended|Screenshot region select
+grimblast|grimblast-git|recommended|Hyprland screenshot helper
+hyprpicker|hyprpicker|recommended|Color picker
+satty|satty|recommended|Screenshot annotation
+swayosd-client|swayosd-git|recommended|Volume/brightness OSD
+swayosd-server|swayosd-git|recommended|Volume/brightness OSD daemon

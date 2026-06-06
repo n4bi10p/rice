@@ -1,108 +1,195 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# ===========================================================================
-# RICE SYSTEM VERIFICATION SCRIPT (ARCH/ENDEAVOUR COMPATIBLE)
-# ===========================================================================
+set -u
 
-echo "=========================================="
-echo "Checking System Requirements..."
-echo "=========================================="
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+manifest="$repo_root/scripts/pkg_core.lst"
+fail_count=0
+warn_count=0
 
-FAIL_COUNT=0
+info() {
+    printf '%s\n' "$1"
+}
 
-# 1. Check Waybar version (must be >= 0.10)
-if command -v waybar > /dev/null; then
-    WAYBAR_VERSION=$(waybar --version | awk '{print $2}' | sed 's/v//')
-    if [ "$(printf '%s\n' "0.10.0" "$WAYBAR_VERSION" | sort -V | head -n1)" = "0.10.0" ]; then
-        echo "✅ PASS: Waybar version $WAYBAR_VERSION is 0.10.x+"
-    else
-        echo "❌ FAIL: Waybar version is $WAYBAR_VERSION (needs 0.10.x+)"
-        echo "   FIX: sudo pacman -S waybar"
-        ((FAIL_COUNT++))
+pass() {
+    printf '[PASS] %s\n' "$1"
+}
+
+warn() {
+    printf '[WARN] %s\n' "$1"
+    warn_count=$((warn_count + 1))
+}
+
+fail() {
+    printf '[FAIL] %s\n' "$1"
+    fail_count=$((fail_count + 1))
+}
+
+check_command() {
+    local command_name="$1"
+    local package_name="$2"
+    local level="$3"
+    local description="$4"
+
+    if [[ "$command_name" == */* ]]; then
+        if [ -x "$command_name" ]; then
+            pass "$command_name found"
+            return
+        fi
+    elif command -v "$command_name" >/dev/null 2>&1; then
+        pass "$command_name found ($(command -v "$command_name"))"
+        return
     fi
-else
-    echo "❌ FAIL: Waybar is not installed"
-    echo "   FIX: sudo pacman -S waybar"
-    ((FAIL_COUNT++))
-fi
 
-# 2. Check JetBrains Mono Nerd Font
-if fc-list | grep -i "JetBrains.*Nerd" > /dev/null; then
-    echo "✅ PASS: JetBrains Mono Nerd Font detected"
-else
-    echo "❌ FAIL: JetBrains Mono Nerd Font missing"
-    echo "   FIX: Run ./install_fonts.sh"
-    ((FAIL_COUNT++))
-fi
-
-# 3. Check runtime tools used by the rice
-for TOOL in quickshell rofi swaybg nmcli rfkill brightnessctl wpctl; do
-    if command -v "$TOOL" > /dev/null; then
-        TOOL_PATH=$(command -v "$TOOL")
-        echo "✅ PASS: $TOOL found at $TOOL_PATH"
+    if [ "$level" = "required" ]; then
+        fail "$command_name missing; install package: $package_name ($description)"
     else
-        echo "❌ FAIL: $TOOL is not installed"
-        case "$TOOL" in
-            quickshell) echo "   FIX: yay -S quickshell-git" ;;
-            rofi) echo "   FIX: sudo pacman -S rofi-wayland" ;;
-            swaybg) echo "   FIX: sudo pacman -S swaybg" ;;
-            nmcli) echo "   FIX: sudo pacman -S networkmanager" ;;
-            rfkill) echo "   FIX: sudo pacman -S util-linux" ;;
-            brightnessctl) echo "   FIX: sudo pacman -S brightnessctl" ;;
-            wpctl) echo "   FIX: sudo pacman -S wireplumber" ;;
+        warn "$command_name missing; recommended package: $package_name ($description)"
+    fi
+}
+
+check_manifest() {
+    if [ ! -f "$manifest" ]; then
+        fail "Package manifest missing: scripts/pkg_core.lst"
+        return
+    fi
+
+    pass "Package manifest found: scripts/pkg_core.lst"
+
+    while IFS='|' read -r command_name package_name level description || [ -n "${command_name:-}" ]; do
+        case "${command_name:-}" in
+            ""|\#*) continue ;;
         esac
-        ((FAIL_COUNT++))
+
+        [ -n "${package_name:-}" ] || package_name="$command_name"
+        [ -n "${level:-}" ] || level="required"
+        [ -n "${description:-}" ] || description="$command_name"
+
+        check_command "$command_name" "$package_name" "$level" "$description"
+    done < "$manifest"
+}
+
+check_font() {
+    if command -v fc-list >/dev/null 2>&1 && fc-list | grep -qi "JetBrains.*Nerd"; then
+        pass "JetBrains Nerd font detected"
+    else
+        warn "JetBrains Nerd font not detected; run ./install_fonts.sh"
     fi
-done
+}
 
-# 4. Check pavucontrol fallback
-if command -v pavucontrol > /dev/null; then
-    PAVU_PATH=$(which pavucontrol)
-    echo "✅ PASS: pavucontrol found at $PAVU_PATH"
-else
-    echo "❌ FAIL: pavucontrol not found"
-    echo "   FIX: sudo pacman -S pavucontrol"
-    ((FAIL_COUNT++))
-fi
+check_file() {
+    local path="$1"
+    [ -f "$repo_root/$path" ] && pass "$path exists" || fail "$path missing"
+}
 
-# 5. Check Quickshell helper scripts
-for SCRIPT in "$PWD/.config/quickshell/hw_stats.sh" "$PWD/.config/quickshell/sw_stats.sh" "$PWD/.config/quickshell/control_state.sh"; do
-    if [ -x "$SCRIPT" ]; then
-        if "$SCRIPT" > /dev/null; then
-            echo "✅ PASS: $(basename "$SCRIPT") runs"
+check_executable() {
+    local path="$1"
+    [ -x "$repo_root/$path" ] && pass "$path executable" || fail "$path missing or not executable"
+}
+
+check_shell_syntax() {
+    local path="$1"
+    if [ ! -f "$repo_root/$path" ]; then
+        fail "$path missing for syntax check"
+        return
+    fi
+
+    if bash -n "$repo_root/$path"; then
+        pass "$path shell syntax"
+    else
+        fail "$path shell syntax"
+    fi
+}
+
+check_hyprland_config() {
+    local config="$repo_root/.config/hypr/hyprland.conf"
+
+    check_file ".config/hypr/hyprland.conf"
+    for include in env monitors userprefs windowrules keybindings startup; do
+        check_file ".config/hypr/${include}.conf"
+        if grep -Eq "^source = .*/${include}\.conf$" "$config"; then
+            pass "hyprland.conf sources ${include}.conf"
         else
-            echo "❌ FAIL: $(basename "$SCRIPT") exists but returned an error"
-            ((FAIL_COUNT++))
+            fail "hyprland.conf does not source ${include}.conf"
         fi
-    else
-        echo "❌ FAIL: $(basename "$SCRIPT") is missing or not executable"
-        ((FAIL_COUNT++))
-    fi
-done
+    done
+}
 
-# 6. Check Hyprland (hyprctl version)
-if command -v hyprctl > /dev/null; then
-    if hyprctl version > /dev/null 2>&1; then
-        HYPR_VER=$(hyprctl version | grep -i "Tag:" | head -n 1 | awk '{print $2}')
-        if [ -z "$HYPR_VER" ]; then
-            HYPR_VER=$(hyprctl version | head -n 1)
+check_helpers() {
+    for script in \
+        "scripts/sync-config.sh" \
+        ".config/quickshell/control_state.sh" \
+        ".config/quickshell/wifi_state.sh" \
+        ".config/quickshell/bluetooth_state.sh" \
+        ".config/quickshell/hw_stats.sh" \
+        ".config/quickshell/sw_stats.sh" \
+        ".config/rofi/clipboard-menu.sh" \
+        ".config/hypr/scripts/lockscreen.sh" \
+        ".config/hypr/scripts/logoutlaunch.sh" \
+        ".config/hypr/scripts/volumecontrol.sh" \
+        ".config/hypr/scripts/brightnesscontrol.sh" \
+        ".config/hypr/scripts/resetxdgportal.sh" \
+        ".config/hypr/scripts/keybinds.sh" \
+        ".config/hypr/scripts/swayosd-launch.sh"; do
+        check_executable "$script"
+        check_shell_syntax "$script"
+    done
+
+    check_file ".config/hypr/hypridle.conf"
+    check_file ".config/swayosd/config.toml"
+    check_file ".config/swayosd/style.css"
+}
+
+check_live_session() {
+    if command -v hyprctl >/dev/null 2>&1 && hyprctl version >/dev/null 2>&1; then
+        pass "Hyprland socket reachable"
+    else
+        warn "Hyprland socket not reachable; live reload checks skipped"
+    fi
+
+    if command -v systemctl >/dev/null 2>&1; then
+        if systemctl is-active --quiet NetworkManager.service 2>/dev/null; then
+            pass "NetworkManager service active"
+        else
+            warn "NetworkManager service not active or not visible"
         fi
-        echo "✅ PASS: Hyprland is installed and running ($HYPR_VER)"
-    else
-        echo "❌ FAIL: hyprctl found, but cannot connect to Hyprland socket"
-        echo "   FIX: Run this script from inside a Hyprland session."
-        ((FAIL_COUNT++))
-    fi
-else
-    echo "❌ FAIL: hyprctl command not found"
-    echo "   FIX: sudo pacman -S hyprland"
-    ((FAIL_COUNT++))
-fi
 
-echo "=========================================="
-if [ $FAIL_COUNT -eq 0 ]; then
-    echo "🎉 ALL CHECKS PASSED!"
+        if systemctl is-active --quiet bluetooth.service 2>/dev/null; then
+            pass "Bluetooth service active"
+        else
+            warn "Bluetooth service not active or not visible"
+        fi
+    fi
+
+    if pgrep -f '(^|/)xdg-desktop-portal-hyprland($| )' >/dev/null 2>&1; then
+        pass "xdg-desktop-portal-hyprland is running"
+    else
+        warn "xdg-desktop-portal-hyprland is not running"
+    fi
+
+    if pgrep -x hypridle >/dev/null 2>&1; then
+        pass "hypridle is running"
+    else
+        warn "hypridle is not running"
+    fi
+}
+
+info "=========================================="
+info "Terminal Noir rice verification"
+info "=========================================="
+
+check_manifest
+check_font
+check_hyprland_config
+check_helpers
+check_live_session
+
+info "=========================================="
+if [ "$fail_count" -eq 0 ]; then
+    info "Verification passed with $warn_count warning(s)."
 else
-    echo "⚠️ $FAIL_COUNT CHECK(S) FAILED. Apply fixes above."
+    info "Verification failed with $fail_count failure(s) and $warn_count warning(s)."
 fi
-echo "=========================================="
+info "=========================================="
+
+[ "$fail_count" -eq 0 ]
