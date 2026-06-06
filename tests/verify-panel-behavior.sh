@@ -72,6 +72,9 @@ require_shell_syntax ".config/quickshell/apply_waybar_modules.sh"
 require_shell_syntax ".config/quickshell/focus_notification_source.sh"
 
 require_contains ".config/quickshell/SettingsPanel.qml" 'function applyWaybarModules\(' "settings panel can apply Waybar module toggles"
+require_contains ".config/quickshell/SettingsPanel.qml" 'id: backgroundScrim' "settings panel has explicit non-closing background scrim"
+require_contains ".config/quickshell/SettingsPanel.qml" 'onClicked: settingsPanel\.forceActiveFocus\(\)' "settings background click keeps panel open"
+require_contains ".config/quickshell/SettingsPanel.qml" 'component ScrollPage: Flickable' "settings panel has reusable scroll page"
 require_contains ".config/quickshell/SettingsPanel.qml" 'apply_waybar_modules\.sh' "settings panel calls Waybar module helper"
 require_contains ".config/quickshell/SettingsPanel.qml" 'barNotificationsEnabled' "settings panel exposes notification bar toggle"
 require_contains ".config/quickshell/SettingsPanel.qml" 'restartShell' "settings panel exposes shell restart action"
@@ -81,6 +84,8 @@ require_contains ".config/quickshell/SettingsPanel.qml" 'hypridle\.service' "set
 require_contains ".config/quickshell/SettingsPanel.qml" 'hyprsunset\.service' "settings panel controls hyprsunset service"
 
 require_contains ".config/quickshell/ControlCenter.qml" 'function dismissAllNotifications\(' "control center dismisses all notifications via backing objects"
+require_contains ".config/quickshell/ControlCenter.qml" 'implicitHeight: detailPage === "" \? 640 : 760' "quick panel has expanded height"
+require_contains ".config/quickshell/ControlCenter.qml" 'Layout\.preferredHeight: controlCenter\.detailPage === "" \? 240 : 380' "quick panel has expanded notification/detail area"
 require_contains ".config/quickshell/ControlCenter.qml" 'focus_notification_source\.sh' "control center uses notification focus helper"
 require_contains ".config/quickshell/ControlCenter.qml" 'desktopEntry.*appName.*title|title.*appName.*desktopEntry' "control center passes notification source fields to focus helper"
 require_contains ".config/quickshell/ControlCenter.qml" 'dismissAllNotifications\(\)' "clear notifications button uses dismiss-all helper"
