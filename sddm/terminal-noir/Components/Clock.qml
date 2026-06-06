@@ -1,5 +1,5 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick.Controls 2.15 as QQC2
 import QtQuick.Layouts 1.15
 
 ColumnLayout {
@@ -18,7 +18,7 @@ ColumnLayout {
 
     Item { Layout.fillHeight: true }
 
-    Label {
+    QQC2.Label {
         Layout.fillWidth: true
         text: config.HeaderText || "TERMINAL NOIR"
         color: config.HeaderTextColor || "#ffffff"
@@ -29,7 +29,7 @@ ColumnLayout {
         renderType: Text.QtRendering
     }
 
-    Label {
+    QQC2.Label {
         Layout.fillWidth: true
         text: Qt.formatTime(clock.currentDate, config.HourFormat || "HH:mm")
         color: config.TimeTextColor || "#ffffff"
@@ -40,7 +40,7 @@ ColumnLayout {
         renderType: Text.QtRendering
     }
 
-    Label {
+    QQC2.Label {
         Layout.fillWidth: true
         text: Qt.formatDate(clock.currentDate, config.DateFormat || "dddd d MMMM").toUpperCase()
         color: config.DateTextColor || "#b0b0b0"

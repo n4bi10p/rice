@@ -1,5 +1,5 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick.Controls 2.15 as QQC2
 import QtQuick.Layouts 1.15
 
 RowLayout {
@@ -16,7 +16,7 @@ RowLayout {
     Repeater {
         model: systemButtons.actions
 
-        Button {
+        QQC2.Button {
             required property var modelData
             Layout.preferredWidth: 104
             Layout.preferredHeight: 34

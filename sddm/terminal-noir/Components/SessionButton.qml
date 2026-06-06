@@ -1,5 +1,5 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick.Controls 2.15 as QQC2
 
 Item {
     id: sessionButton
@@ -9,7 +9,7 @@ Item {
 
     property int selectedSession: selectSession.currentIndex
 
-    ComboBox {
+    QQC2.ComboBox {
         id: selectSession
         anchors.centerIn: parent
         width: Math.min(parent.width, 260)
@@ -41,7 +41,7 @@ Item {
             radius: config.RoundCorners !== "" ? Number(config.RoundCorners) : 0
         }
 
-        delegate: ItemDelegate {
+        delegate: QQC2.ItemDelegate {
             width: selectSession.width
             contentItem: Text {
                 text: model.name
@@ -55,7 +55,7 @@ Item {
             }
         }
 
-        popup: Popup {
+        popup: QQC2.Popup {
             y: selectSession.height
             width: selectSession.width
             implicitHeight: contentItem.implicitHeight

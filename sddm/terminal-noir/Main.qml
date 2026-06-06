@@ -1,12 +1,12 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick.Controls 2.15 as QQC2
 import QtQuick.Layouts 1.15
 import QtQuick.Effects
 import SddmComponents 2.0
 
 import "Components"
 
-Pane {
+QQC2.Pane {
     id: root
 
     width: Screen.width

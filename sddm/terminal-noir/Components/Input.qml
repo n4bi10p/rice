@@ -1,5 +1,5 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick.Controls 2.15 as QQC2
 import QtQuick.Layouts 1.15
 import SddmComponents 2.0
 
@@ -13,7 +13,7 @@ ColumnLayout {
 
     TextConstants { id: textConstants }
 
-    Label {
+    QQC2.Label {
         Layout.fillWidth: true
         Layout.preferredHeight: root.font.pointSize * 1.8
         text: failed ? (config.TranslateLoginFailedWarning || textConstants.loginFailed) : (keyboard.capsLock ? (config.TranslateCapslockWarning || textConstants.capslockWarning) : "")
@@ -24,7 +24,7 @@ ColumnLayout {
         opacity: text.length > 0 ? 1 : 0
     }
 
-    TextField {
+    QQC2.TextField {
         id: username
         Layout.fillWidth: true
         Layout.preferredHeight: root.font.pointSize * 3.3
@@ -61,7 +61,7 @@ ColumnLayout {
         }
     }
 
-    TextField {
+    QQC2.TextField {
         id: password
         Layout.fillWidth: true
         Layout.preferredHeight: root.font.pointSize * 3.3
@@ -99,7 +99,7 @@ ColumnLayout {
         }
     }
 
-    Button {
+    QQC2.Button {
         id: loginButton
         Layout.fillWidth: true
         Layout.preferredHeight: root.font.pointSize * 3.2
