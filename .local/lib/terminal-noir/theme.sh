@@ -2,19 +2,36 @@
 
 set -euo pipefail
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$script_dir/common.sh"
+
 action="${1:-help}"
 
 usage() {
     cat <<'USAGE'
-Usage: tnctl theme <apply|reload>
+Usage: tnctl theme <apply|reload|status>
 USAGE
+}
+
+reload_theme() {
+    "$script_dir/wallpaper.sh" apply
+
+    if [ "${TNCTL_SKIP_APPLY:-0}" != "1" ]; then
+        command -v hyprctl >/dev/null 2>&1 && hyprctl reload >/dev/null 2>&1 || true
+        "$script_dir/waybar.sh" reload >/dev/null 2>&1 || true
+    fi
+
+    terminal_noir_notify "Theme reload complete"
+    printf 'Theme reload complete\n'
 }
 
 case "$action" in
     apply|reload)
-        command -v notify-send >/dev/null 2>&1 && notify-send "Terminal Noir" "Theme ${action} is planned for the theme engine phase" || true
-        printf 'Theme %s is not implemented yet.\n' "$action" >&2
-        exit 1
+        reload_theme
+        ;;
+    status)
+        printf 'theme: %s\n' "$(terminal_noir_config_value theme 2>/dev/null || printf 'terminal-noir')"
+        printf 'wallpaper: %s\n' "$(terminal_noir_current_wallpaper)"
         ;;
     -h|--help|help)
         usage

@@ -131,6 +131,7 @@ check_helpers() {
         ".config/quickshell/hw_stats.sh" \
         ".config/quickshell/sw_stats.sh" \
         ".local/bin/tnctl" \
+        ".local/lib/terminal-noir/common.sh" \
         ".local/lib/terminal-noir/wallpaper.sh" \
         ".local/lib/terminal-noir/theme.sh" \
         ".local/lib/terminal-noir/waybar.sh" \
