@@ -29,6 +29,7 @@ hypridle|hypridle|recommended|Idle, lock and DPMS daemon
 hyprsunset|hyprsunset|recommended|Blue light filter daemon
 /usr/lib/hyprpolkitagent|hyprpolkitagent|recommended|Hyprland-native polkit authentication agent
 playerctl|playerctl|recommended|MPRIS/media controls
+pactl|libpulse|recommended|Per-window PulseAudio/PipeWire stream control
 pamixer|pamixer|recommended|PulseAudio/PipeWire mixer fallback
 pavucontrol|pavucontrol|recommended|Audio control fallback UI
 blueman-applet|blueman|recommended|Bluetooth tray applet fallback
