@@ -104,6 +104,8 @@ for file in \
     "sddm/terminal-noir/Components/Input.qml" \
     "sddm/terminal-noir/Components/SystemButtons.qml" \
     "sddm/terminal-noir/Components/SessionButton.qml" \
+    "sddm/terminal-noir/Components/VirtualKeyboard.qml" \
+    "sddm/terminal-noir/Components/VirtualKeyboardButton.qml" \
     "sddm/terminal-noir/Assets/User.svg" \
     "sddm/terminal-noir/Assets/Password.svg"; do
     require_file "$file"
@@ -155,6 +157,12 @@ require_contains "sddm/terminal-noir/Components/Input.qml" 'import QtQuick\.Cont
 require_contains "sddm/terminal-noir/Components/Input.qml" 'QQC2\.Button' "SDDM login button uses QtQuick Controls button"
 require_contains "sddm/terminal-noir/Components/SystemButtons.qml" 'QQC2\.Button' "SDDM system buttons use QtQuick Controls button"
 require_contains "sddm/terminal-noir/Components/SessionButton.qml" 'QQC2\.ComboBox' "SDDM session selector uses QtQuick Controls combo box"
+require_contains "sddm/terminal-noir/Main.qml" 'function suppressVirtualKeyboard' "SDDM theme suppresses automatic virtual keyboard"
+require_contains "sddm/terminal-noir/Main.qml" 'Components/VirtualKeyboard\.qml' "SDDM theme loads manual virtual keyboard panel"
+require_contains "sddm/terminal-noir/Components/Input.qml" 'root\.suppressVirtualKeyboard' "SDDM input fields suppress automatic keyboard on focus"
+require_contains "sddm/terminal-noir/Components/VirtualKeyboard.qml" 'InputPanel' "SDDM virtual keyboard uses Qt input panel"
+require_contains "sddm/terminal-noir/Components/VirtualKeyboardButton.qml" 'virtualKeyboard\.switchState' "SDDM virtual keyboard button toggles manual keyboard"
+require_contains "sddm/terminal-noir/Themes/terminal-noir.conf" 'HideVirtualKeyboard="false"' "SDDM theme exposes virtual keyboard toggle"
 require_contains "scripts/install-sddm-theme.sh" 'terminal-noir\.conf' "SDDM installer writes Terminal Noir theme config"
 require_contains "scripts/install-sddm-theme.sh" 'magick|convert' "SDDM installer can generate blurred wallpaper"
 require_contains "scripts/install-sddm-theme.sh" '/etc/sddm\.conf' "SDDM installer updates main sddm.conf override"
