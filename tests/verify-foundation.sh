@@ -121,7 +121,7 @@ require_contains ".config/hypr/startup.conf" 'swayosd-server' "startup runs sway
 require_contains ".config/hypr/startup.conf" 'hypridle' "startup runs hypridle"
 require_contains ".config/hypr/startup.conf" 'hyprsunset' "startup runs hyprsunset"
 require_contains ".config/hypr/keybindings.conf" 'slash, exec, .*keybinds\.sh' "keybindings include help overlay"
-require_contains ".config/hypr/keybindings.conf" '^bind = , Print, exec, \$scripts/screenshot-menu\.sh$' "print key opens screenshot menu"
+require_contains ".config/hypr/keybindings.conf" '^bind = , Print, exec, .*tnctl screenshot menu$' "print key opens screenshot menu"
 require_contains ".config/hypr/keybindings.conf" 'volumecontrol\.sh' "keybindings use volume wrapper"
 require_contains ".config/hypr/keybindings.conf" 'brightnesscontrol\.sh' "keybindings use brightness wrapper"
 require_contains ".config/hypr/scripts/keybinds.sh" 'Print[[:space:]]+Screenshot menu' "keybind help shows screenshot menu"

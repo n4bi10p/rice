@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+default_lib_dir="$(cd "$script_dir/../lib/terminal-noir" 2>/dev/null && pwd || true)"
+TNCTL_LIB_DIR="${TNCTL_LIB_DIR:-${default_lib_dir:-$HOME/.local/lib/terminal-noir}}"
+
+usage() {
+    cat <<'USAGE'
+Usage: tnctl <command-group> <action> [args...]
+
+Command groups:
+  wallpaper   Wallpaper selection and application
+  theme       Terminal Noir theme generation and reload
+  waybar      Waybar reload/toggle helpers
+  rofi        Rofi utility menus
+  screenshot  Screenshot menu and capture helpers
+  window      Focused-window helpers
+  media       MPRIS/media helpers
+  system      Shell, OSD, and service helpers
+  clipboard   Clipboard panel helper
+  weather     Weather provider helper
+  updates     Package update helper
+
+Examples:
+  tnctl clipboard open
+  tnctl screenshot menu
+  tnctl waybar reload
+USAGE
+}
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ] || [ "$#" -eq 0 ]; then
+    usage
+    exit 0
+fi
+
+group="$1"
+shift
+
+case "$group" in
+    wallpaper|theme|waybar|rofi|screenshot|window|media|system|clipboard|weather|updates)
+        helper="$TNCTL_LIB_DIR/$group.sh"
+        ;;
+    *)
+        printf 'Unknown command group: %s\n\n' "$group" >&2
+        usage >&2
+        exit 2
+        ;;
+esac
+
+if [ ! -x "$helper" ]; then
+    printf 'Missing Terminal Noir helper: %s\n' "$helper" >&2
+    exit 1
+fi
+
+exec "$helper" "$@"

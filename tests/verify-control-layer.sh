@@ -86,6 +86,7 @@ require_contains ".local/lib/terminal-noir/clipboard.sh" 'quickshell ipc call cl
 require_contains ".local/lib/terminal-noir/system.sh" 'restart-shell' "system helper exposes shell restart"
 require_contains ".config/hypr/keybindings.conf" 'tnctl clipboard open' "clipboard keybind uses tnctl"
 require_contains ".config/hypr/keybindings.conf" 'tnctl screenshot menu' "screenshot keybind uses tnctl"
+require_contains "scripts/sync-config.sh" '\.local' "sync-config copies local command helpers"
 
 if [ "$fail_count" -gt 0 ]; then
     printf '\n%d control layer check(s) failed.\n' "$fail_count"

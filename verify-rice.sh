@@ -130,6 +130,18 @@ check_helpers() {
         ".config/quickshell/focus_notification_source.sh" \
         ".config/quickshell/hw_stats.sh" \
         ".config/quickshell/sw_stats.sh" \
+        ".local/bin/tnctl" \
+        ".local/lib/terminal-noir/wallpaper.sh" \
+        ".local/lib/terminal-noir/theme.sh" \
+        ".local/lib/terminal-noir/waybar.sh" \
+        ".local/lib/terminal-noir/rofi.sh" \
+        ".local/lib/terminal-noir/screenshot.sh" \
+        ".local/lib/terminal-noir/window.sh" \
+        ".local/lib/terminal-noir/media.sh" \
+        ".local/lib/terminal-noir/system.sh" \
+        ".local/lib/terminal-noir/clipboard.sh" \
+        ".local/lib/terminal-noir/weather.sh" \
+        ".local/lib/terminal-noir/updates.sh" \
         ".config/rofi/clipboard-menu.sh" \
         ".config/hypr/scripts/lockscreen.sh" \
         ".config/hypr/scripts/logoutlaunch.sh" \

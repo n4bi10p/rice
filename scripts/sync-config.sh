@@ -10,9 +10,9 @@ usage() {
     cat <<'USAGE'
 Usage: scripts/sync-config.sh [--dry-run] [--target-home PATH]
 
-Copies this repo's .config tree into the target home directory.
+Copies this repo's .config and .local trees into the target home directory.
 Matching live paths are backed up under ~/.config/cfg_backups/terminal-noir-*.
-Unrelated files in the target .config directory are preserved.
+Unrelated files in the target directories are preserved.
 USAGE
 }
 
@@ -42,15 +42,9 @@ while [ "$#" -gt 0 ]; do
     shift
 done
 
-src_config="$repo_root/.config"
 target_config="$target_home/.config"
 backup_root="$target_config/cfg_backups"
 backup_dir="$backup_root/terminal-noir-$(date +'%Y%m%d-%H%M%S')"
-
-[ -d "$src_config" ] || {
-    printf 'Source config directory not found: %s\n' "$src_config" >&2
-    exit 1
-}
 
 run() {
     if [ "$dry_run" -eq 1 ]; then
@@ -92,8 +86,11 @@ sync_path() {
     printf 'sync: %s -> %s\n' "$src" "$dest"
 }
 
-while IFS= read -r item; do
-    sync_path "$item"
-done < <(find "$src_config" -mindepth 1 -maxdepth 1 | sort)
+for source_root in "$repo_root/.config" "$repo_root/.local"; do
+    [ -d "$source_root" ] || continue
+    while IFS= read -r item; do
+        sync_path "$item"
+    done < <(find "$source_root" -mindepth 1 -maxdepth 1 | sort)
+done
 
 printf 'Done. Backups are under %s\n' "$backup_dir"

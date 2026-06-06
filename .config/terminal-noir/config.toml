@@ -1,0 +1,8 @@
+[terminal_noir]
+theme = "terminal-noir"
+wallpaper = "~/.config/wall/catwall.png"
+
+[commands]
+terminal = "kitty"
+launcher = "rofi -show drun"
+clipboard = "quickshell ipc call clipboard toggle"
