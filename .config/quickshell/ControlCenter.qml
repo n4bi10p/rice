@@ -262,6 +262,20 @@ PanelWindow {
         controlCenter.notifications = controlCenter.notifications.filter(n => n.id !== id)
     }
 
+    function dismissAllNotifications() {
+        for (let i = 0; i < controlCenter.notifications.length; i++) {
+            const item = controlCenter.notifications[i]
+            if (item && item.notification && item.notification.dismiss) {
+                try {
+                    item.notification.dismiss()
+                } catch(e) {
+                    console.warn("Failed to dismiss notification:", e)
+                }
+            }
+        }
+        controlCenter.notifications = []
+    }
+
     function hideNotificationPopup(id) {
         controlCenter.notifications = controlCenter.notifications.map(n => {
             if (n.id !== id)
@@ -274,15 +288,10 @@ PanelWindow {
     }
 
     function focusNotificationSource(item) {
-        const source = (item.desktopEntry || item.appName || "").trim()
-        if (source.length === 0)
+        if (!item)
             return
 
-        const cleaned = source.replace(/\.desktop$/i, "").replace(/[^A-Za-z0-9._-]/g, ".*")
-        if (cleaned.length === 0)
-            return
-
-        focusApp.command = ["hyprctl", "dispatch", "focuswindow", "class:(" + cleaned + ")"]
+        focusApp.command = ["sh", controlCenter.localPath("focus_notification_source.sh"), item.desktopEntry || "", item.appName || "", item.title || ""]
         focusApp.running = false
         focusApp.running = true
     }
@@ -672,7 +681,7 @@ PanelWindow {
                         anchors.fill: parent
                         enabled: controlCenter.notifications.length > 0
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: controlCenter.notifications = []
+                        onClicked: controlCenter.dismissAllNotifications()
                     }
                 }
             }

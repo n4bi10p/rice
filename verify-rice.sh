@@ -121,6 +121,8 @@ check_helpers() {
         ".config/quickshell/control_state.sh" \
         ".config/quickshell/wifi_state.sh" \
         ".config/quickshell/bluetooth_state.sh" \
+        ".config/quickshell/apply_waybar_modules.sh" \
+        ".config/quickshell/focus_notification_source.sh" \
         ".config/quickshell/hw_stats.sh" \
         ".config/quickshell/sw_stats.sh" \
         ".config/rofi/clipboard-menu.sh" \

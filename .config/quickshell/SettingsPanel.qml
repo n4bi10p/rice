@@ -63,6 +63,35 @@ PanelWindow {
         settings.save()
     }
 
+    function boolArg(value) {
+        return value ? "true" : "false"
+    }
+
+    function setSettingAndApplyWaybar(name, value) {
+        settingsPanel.setSetting(name, value)
+        settingsPanel.applyWaybarModules()
+    }
+
+    function run(process) {
+        process.running = false
+        process.running = true
+    }
+
+    function applyWaybarModules() {
+        if (!settings)
+            return
+
+        applyWaybar.command = [
+            "sh",
+            settingsPanel.localPath("apply_waybar_modules.sh"),
+            settingsPanel.boolArg(settings.barNetworkEnabled),
+            settingsPanel.boolArg(settings.barAudioEnabled),
+            settingsPanel.boolArg(settings.barBluetoothEnabled),
+            settingsPanel.boolArg(settings.barNotificationsEnabled)
+        ]
+        settingsPanel.run(applyWaybar)
+    }
+
     function applyCurrentWallpaper() {
         applyWallpaper.command = ["sh", "-c", "pkill swaybg; swaybg -i \"$1\" -m fill >/tmp/swaybg.log 2>&1 &", "sh", currentWallpaperPath()]
         applyWallpaper.running = false
@@ -78,12 +107,18 @@ PanelWindow {
         applyBlur.running = true
     }
 
-    Process { id: reloadShell; command: ["quickshell", "ipc", "call", "controlcenter", "toggle"]; running: false }
+    Process { id: applyWaybar; running: false }
+    Process { id: restartShell; command: ["sh", "-c", "(sleep 0.2; quickshell kill 2>/dev/null || pkill -x quickshell || true; quickshell --daemonize -p \"$HOME/.config/quickshell/shell.qml\") >/tmp/terminal-noir-quickshell-restart.log 2>&1 &"]; running: false }
     Process { id: restartWaybar; command: ["sh", "-c", "pkill waybar; waybar >/tmp/waybar.log 2>&1 &"]; running: false }
+    Process { id: restartOsd; command: ["sh", "-c", "pkill -x swayosd-server >/dev/null 2>&1 || true; \"$HOME/.config/hypr/scripts/swayosd-launch.sh\" >/tmp/terminal-noir-swayosd.log 2>&1 &"]; running: false }
+    Process { id: restartIdle; command: ["systemctl", "--user", "restart", "hypridle.service"]; running: false }
+    Process { id: restartSunset; command: ["systemctl", "--user", "restart", "hyprsunset.service"]; running: false }
+    Process { id: resetPortals; command: ["sh", "-c", "\"$HOME/.config/hypr/scripts/resetxdgportal.sh\""]; running: false }
+    Process { id: testNotification; command: ["notify-send", "-a", "Terminal Noir", "Terminal Noir", "Notification pipeline is active"]; running: false }
     Process { id: applyWallpaper; running: false }
     Process { id: applyBlur; running: false }
     Process { id: reloadHyprland; command: ["hyprctl", "reload"]; running: false }
-    Process { id: lockScreen; command: ["hyprlock", "--immediate-render", "--no-fade-in"]; running: false }
+    Process { id: lockScreen; command: [Quickshell.env("HOME") + "/.config/hypr/scripts/lockscreen.sh"]; running: false }
 
     Rectangle {
         anchors.fill: parent
@@ -297,7 +332,7 @@ PanelWindow {
                         ActionButton {
                             icon: ""
                             label: "Restart Waybar"
-                            onClicked: { restartWaybar.running = false; restartWaybar.running = true }
+                            onClicked: settingsPanel.applyWaybarModules()
                         }
                     }
                 }
@@ -342,19 +377,25 @@ PanelWindow {
                 title: "Network Module"
                 subtitle: "Persisted preference for the Waybar network block"
                 checked: settingsPanel.settings ? settingsPanel.settings.barNetworkEnabled : true
-                onToggled: (value) => settingsPanel.setSetting("barNetworkEnabled", value)
+                onToggled: (value) => settingsPanel.setSettingAndApplyWaybar("barNetworkEnabled", value)
             }
             ToggleLine {
                 title: "Audio Module"
                 subtitle: "Persisted preference for the Waybar audio block"
                 checked: settingsPanel.settings ? settingsPanel.settings.barAudioEnabled : true
-                onToggled: (value) => settingsPanel.setSetting("barAudioEnabled", value)
+                onToggled: (value) => settingsPanel.setSettingAndApplyWaybar("barAudioEnabled", value)
             }
             ToggleLine {
                 title: "Bluetooth Module"
                 subtitle: "Persisted preference for the Waybar Bluetooth block"
                 checked: settingsPanel.settings ? settingsPanel.settings.barBluetoothEnabled : true
-                onToggled: (value) => settingsPanel.setSetting("barBluetoothEnabled", value)
+                onToggled: (value) => settingsPanel.setSettingAndApplyWaybar("barBluetoothEnabled", value)
+            }
+            ToggleLine {
+                title: "Notifications Module"
+                subtitle: "Persisted preference for the Waybar notification button"
+                checked: settingsPanel.settings ? settingsPanel.settings.barNotificationsEnabled : true
+                onToggled: (value) => settingsPanel.setSettingAndApplyWaybar("barNotificationsEnabled", value)
             }
         }
     }
@@ -403,8 +444,15 @@ PanelWindow {
             InfoLine { title: "Window Manager"; value: "Hyprland" }
             InfoLine { title: "Shell"; value: "Quickshell" }
             InfoLine { title: "Launcher"; value: "Rofi" }
-            ActionButton { icon: ""; label: "Reload Hyprland"; onClicked: { reloadHyprland.running = false; reloadHyprland.running = true } }
-            ActionButton { icon: ""; label: "Lock"; onClicked: { lockScreen.running = false; lockScreen.running = true } }
+            ActionButton { icon: ""; label: "Reload Hyprland"; onClicked: settingsPanel.run(reloadHyprland) }
+            ActionButton { icon: "󰒲"; label: "Restart Shell"; onClicked: settingsPanel.run(restartShell) }
+            ActionButton { icon: "▰"; label: "Restart Waybar"; onClicked: settingsPanel.applyWaybarModules() }
+            ActionButton { icon: "󰍹"; label: "Restart OSD"; onClicked: settingsPanel.run(restartOsd) }
+            ActionButton { icon: "󰒲"; label: "Restart Idle Service"; onClicked: settingsPanel.run(restartIdle) }
+            ActionButton { icon: "󰖔"; label: "Restart Sunset Service"; onClicked: settingsPanel.run(restartSunset) }
+            ActionButton { icon: "󰖟"; label: "Reset Portals"; onClicked: settingsPanel.run(resetPortals) }
+            ActionButton { icon: ""; label: "Test Notification"; onClicked: settingsPanel.run(testNotification) }
+            ActionButton { icon: ""; label: "Lock"; onClicked: settingsPanel.run(lockScreen) }
         }
     }
 
