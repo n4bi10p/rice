@@ -65,6 +65,7 @@ require_shell_syntax() {
 
 require_file "scripts/pkg_core.lst"
 require_executable "scripts/sync-config.sh"
+require_executable "scripts/install-sddm-theme.sh"
 require_executable ".config/hypr/scripts/lockscreen.sh"
 require_executable ".config/hypr/scripts/logoutlaunch.sh"
 require_executable ".config/hypr/scripts/volumecontrol.sh"
@@ -82,8 +83,21 @@ for file in \
     ".config/hypr/monitors.conf" \
     ".config/hypr/userprefs.conf" \
     ".config/hypr/hypridle.conf" \
+    ".config/Code/User/settings.json" \
+    ".config/Code - OSS/User/settings.json" \
+    ".config/VSCodium/User/settings.json" \
+    ".config/vim/vimrc" \
+    ".config/vim/colors/terminal-noir.vim" \
+    ".config/code-flags.conf" \
+    ".config/code-oss-flags.conf" \
+    ".config/codium-flags.conf" \
+    ".config/spotify-flags.conf" \
+    ".config/spicetify/Themes/TerminalNoir/color.ini" \
+    ".config/spicetify/Themes/TerminalNoir/user.css" \
     ".config/swayosd/config.toml" \
-    ".config/swayosd/style.css"; do
+    ".config/swayosd/style.css" \
+    "sddm/terminal-noir/Main.qml" \
+    "sddm/terminal-noir/theme.conf"; do
     require_file "$file"
 done
 
@@ -110,12 +124,29 @@ require_contains ".config/hypr/scripts/screenshot-menu.sh" 'Monitor to file' "sc
 require_contains ".config/hypr/scripts/screenshot-menu.sh" 'Color picker' "screenshot menu has color picker action"
 require_contains ".config/hypr/scripts/screenshot-menu.sh" 'wf-recorder' "screenshot menu supports recording toggle"
 require_contains "scripts/pkg_core.lst" '^wf-recorder\|wf-recorder\|recommended\|' "package manifest includes screenshot recorder"
+require_contains "scripts/pkg_core.lst" '^vim\|vim\|recommended\|' "package manifest includes vim"
+require_contains "scripts/pkg_core.lst" '^code\|code\|recommended\|' "package manifest includes code"
+require_contains "scripts/pkg_core.lst" '^spotify\|spotify\|recommended\|' "package manifest includes spotify"
+require_contains "scripts/pkg_core.lst" '^spicetify\|spicetify-cli\|recommended\|' "package manifest includes spicetify"
+require_contains "scripts/pkg_core.lst" '^sddm\|sddm\|recommended\|' "package manifest includes sddm"
+require_contains "scripts/pkg_core.lst" '^magick\|imagemagick\|recommended\|' "package manifest includes imagemagick for SDDM blur"
+require_contains ".config/hypr/windowrules.conf" 'match:class \^\(\.\*Code\.\*\)\$, opacity' "window rules add Code transparency"
+require_contains ".config/hypr/windowrules.conf" 'match:class \^\(Spotify\)\$, opacity' "window rules add Spotify transparency"
+require_contains ".config/hypr/windowrules.conf" 'match:class \^\(kitty\)\$, opacity' "window rules add Kitty transparency"
+require_contains ".config/Code/User/settings.json" 'workbench\.colorCustomizations' "Code settings include monochrome color customizations"
+require_contains ".config/vim/vimrc" 'colorscheme terminal-noir' "vim uses Terminal Noir colorscheme"
+require_contains ".config/spicetify/Themes/TerminalNoir/user.css" 'rgba\(10, 10, 10' "spicetify theme uses translucent monochrome surfaces"
+require_contains "sddm/terminal-noir/Main.qml" 'background-blur\.png' "SDDM theme uses generated blurred wallpaper"
+require_contains "sddm/terminal-noir/theme.conf" 'Background=.*/catwall\.png|Background=background\.png' "SDDM theme declares wallpaper background"
+require_contains "scripts/install-sddm-theme.sh" 'terminal-noir\.conf' "SDDM installer writes Terminal Noir theme config"
+require_contains "scripts/install-sddm-theme.sh" 'magick|convert' "SDDM installer can generate blurred wallpaper"
 require_contains "verify-rice.sh" 'scripts/pkg_core\.lst' "verify-rice reads package manifest"
 require_contains "verify-rice.sh" 'xdg-desktop-portal-hyprland' "verify-rice checks hyprland portal"
 require_contains "verify-rice.sh" 'hypridle' "verify-rice checks hypridle"
 
 for file in \
     "scripts/sync-config.sh" \
+    "scripts/install-sddm-theme.sh" \
     ".config/hypr/scripts/lockscreen.sh" \
     ".config/hypr/scripts/logoutlaunch.sh" \
     ".config/hypr/scripts/volumecontrol.sh" \
