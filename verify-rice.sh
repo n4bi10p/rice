@@ -132,6 +132,7 @@ check_helpers() {
         ".config/hypr/scripts/brightnesscontrol.sh" \
         ".config/hypr/scripts/resetxdgportal.sh" \
         ".config/hypr/scripts/keybinds.sh" \
+        ".config/hypr/scripts/screenshot-menu.sh" \
         ".config/hypr/scripts/swayosd-launch.sh"; do
         check_executable "$script"
         check_shell_syntax "$script"

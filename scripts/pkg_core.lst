@@ -39,5 +39,6 @@ slurp|slurp|recommended|Screenshot region select
 grimblast|grimblast-git|recommended|Hyprland screenshot helper
 hyprpicker|hyprpicker|recommended|Color picker
 satty|satty|recommended|Screenshot annotation
+wf-recorder|wf-recorder|recommended|Screen recording from screenshot menu
 swayosd-client|swayosd-git|recommended|Volume/brightness OSD
 swayosd-server|swayosd-git|recommended|Volume/brightness OSD daemon

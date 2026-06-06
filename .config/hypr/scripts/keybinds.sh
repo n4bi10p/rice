@@ -16,7 +16,7 @@ SUPER + H/J/K/L           Focus window
 SUPER + SHIFT + H/J/K/L   Move window
 SUPER + 1..5              Switch workspace
 SUPER + SHIFT + 1..5      Move window to workspace
-Print                     Area screenshot
+Print                     Screenshot menu
 SUPER + SHIFT + P         Color picker
 Fn + F1 / XF86AudioMute        Mute volume
 Fn + F2 / XF86AudioLowerVolume Volume down
