@@ -121,10 +121,14 @@ PanelWindow {
     Process { id: lockScreen; command: [Quickshell.env("HOME") + "/.config/hypr/scripts/lockscreen.sh"]; running: false }
 
     Rectangle {
+        id: backgroundScrim
         anchors.fill: parent
         color: "#000000"
         opacity: 0.55
-        MouseArea { anchors.fill: parent; onClicked: settingsPanel.close() }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: settingsPanel.forceActiveFocus()
+        }
     }
 
     Rectangle {
@@ -355,7 +359,7 @@ PanelWindow {
 
     Component {
         id: generalPage
-        PageColumn {
+        ScrollPage {
             SectionTitle { icon: ""; title: "Typography" }
             InfoLine { title: "Main Font"; value: "JetBrains Mono" }
             InfoLine { title: "Mono Font"; value: "JetBrains Mono Nerd Font" }
@@ -368,7 +372,7 @@ PanelWindow {
 
     Component {
         id: barPage
-        PageColumn {
+        ScrollPage {
             SectionTitle { icon: "▰"; title: "Bar" }
             InfoLine { title: "Position"; value: "Top" }
             InfoLine { title: "Workspaces"; value: "1-5" }
@@ -402,7 +406,7 @@ PanelWindow {
 
     Component {
         id: modulesPage
-        PageColumn {
+        ScrollPage {
             SectionTitle { icon: ""; title: "Modules" }
             ToggleLine {
                 title: "Quick Details"
@@ -439,7 +443,7 @@ PanelWindow {
 
     Component {
         id: systemPage
-        PageColumn {
+        ScrollPage {
             SectionTitle { icon: ""; title: "System" }
             InfoLine { title: "Window Manager"; value: "Hyprland" }
             InfoLine { title: "Shell"; value: "Quickshell" }
@@ -458,7 +462,7 @@ PanelWindow {
 
     Component {
         id: keybindsPage
-        PageColumn {
+        ScrollPage {
             SectionTitle { icon: ""; title: "Keybinds" }
             InfoLine { title: "Terminal"; value: "SUPER + T" }
             InfoLine { title: "Launcher"; value: "SUPER + Space" }
@@ -471,8 +475,34 @@ PanelWindow {
         }
     }
 
-    component PageColumn: ColumnLayout {
-        spacing: 14
+    component ScrollPage: Flickable {
+        id: scrollPage
+
+        default property alias content: pageColumn.data
+
+        contentWidth: width
+        contentHeight: pageColumn.implicitHeight
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
+        flickableDirection: Flickable.VerticalFlick
+        interactive: contentHeight > height
+
+        ColumnLayout {
+            id: pageColumn
+            width: scrollPage.width - (scrollIndicator.visible ? 10 : 0)
+            spacing: 14
+        }
+
+        Rectangle {
+            id: scrollIndicator
+            visible: scrollPage.contentHeight > scrollPage.height
+            z: 4
+            width: 2
+            height: Math.max(28, scrollPage.visibleArea.heightRatio * scrollPage.height)
+            x: scrollPage.width - width
+            y: scrollPage.visibleArea.yPosition * scrollPage.height
+            color: "#444444"
+        }
     }
 
     component SectionTitle: RowLayout {

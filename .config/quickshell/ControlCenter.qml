@@ -18,7 +18,7 @@ PanelWindow {
     }
 
     implicitWidth: 336
-    implicitHeight: detailPage === "" ? 530 : 620
+    implicitHeight: detailPage === "" ? 640 : 760
     color: "#0a0a0a"
     visible: false
     onVisibleChanged: if (visible) panelRoot.forceActiveFocus()
@@ -600,7 +600,7 @@ PanelWindow {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: controlCenter.detailPage === "" ? 170 : 260
+            Layout.preferredHeight: controlCenter.detailPage === "" ? 240 : 380
             color: "#0d0d0d"
             border.color: "#1c1c1c"
             border.width: 1
