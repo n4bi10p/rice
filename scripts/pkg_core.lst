@@ -40,5 +40,11 @@ grimblast|grimblast-git|recommended|Hyprland screenshot helper
 hyprpicker|hyprpicker|recommended|Color picker
 satty|satty|recommended|Screenshot annotation
 wf-recorder|wf-recorder|recommended|Screen recording from screenshot menu
+vim|vim|recommended|Terminal editor themed for Terminal Noir
+code|code|recommended|Code editor themed for Terminal Noir
+spotify|spotify|recommended|Spotify client themed for Terminal Noir
+spicetify|spicetify-cli|recommended|Spotify CSS theme integration
+sddm|sddm|recommended|Display manager for Terminal Noir login theme
+magick|imagemagick|recommended|Generate blurred SDDM wallpaper
 swayosd-client|swayosd-git|recommended|Volume/brightness OSD
 swayosd-server|swayosd-git|recommended|Volume/brightness OSD daemon

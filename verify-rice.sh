@@ -118,6 +118,7 @@ check_hyprland_config() {
 check_helpers() {
     for script in \
         "scripts/sync-config.sh" \
+        "scripts/install-sddm-theme.sh" \
         ".config/quickshell/control_state.sh" \
         ".config/quickshell/wifi_state.sh" \
         ".config/quickshell/bluetooth_state.sh" \

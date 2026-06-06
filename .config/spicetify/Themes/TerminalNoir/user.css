@@ -1,0 +1,36 @@
+:root {
+  --tn-bg: rgba(10, 10, 10, 0.78);
+  --tn-panel: rgba(17, 17, 17, 0.72);
+  --tn-raised: rgba(28, 28, 28, 0.86);
+  --tn-border: rgba(224, 224, 224, 0.16);
+}
+
+body,
+.Root__main-view,
+.Root__nav-bar,
+.Root__now-playing-bar,
+.main-view-container,
+.main-topBar-background {
+  background: var(--tn-bg) !important;
+}
+
+.main-card-card,
+.main-trackList-trackListRow,
+.main-nowPlayingBar-container,
+.main-yourLibraryX-entryPoints,
+.main-topBar-container {
+  background: var(--tn-panel) !important;
+  border-color: var(--tn-border) !important;
+}
+
+.main-trackList-trackListRow:hover,
+.main-card-card:hover,
+.main-contextMenu-menu {
+  background: var(--tn-raised) !important;
+}
+
+button,
+.Button-sc-qlcn5g-0,
+.main-playButton-PlayButton {
+  border-radius: 0 !important;
+}
