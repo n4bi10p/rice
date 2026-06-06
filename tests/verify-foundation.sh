@@ -72,6 +72,7 @@ require_executable ".config/hypr/scripts/brightnesscontrol.sh"
 require_executable ".config/hypr/scripts/resetxdgportal.sh"
 require_executable ".config/hypr/scripts/keybinds.sh"
 require_executable ".config/hypr/scripts/swayosd-launch.sh"
+require_executable ".config/hypr/scripts/screenshot-menu.sh"
 
 for file in \
     ".config/hypr/env.conf" \
@@ -96,8 +97,19 @@ require_contains ".config/hypr/startup.conf" 'swayosd-server' "startup runs sway
 require_contains ".config/hypr/startup.conf" 'hypridle' "startup runs hypridle"
 require_contains ".config/hypr/startup.conf" 'hyprsunset' "startup runs hyprsunset"
 require_contains ".config/hypr/keybindings.conf" 'slash, exec, .*keybinds\.sh' "keybindings include help overlay"
+require_contains ".config/hypr/keybindings.conf" '^bind = , Print, exec, \$scripts/screenshot-menu\.sh$' "print key opens screenshot menu"
 require_contains ".config/hypr/keybindings.conf" 'volumecontrol\.sh' "keybindings use volume wrapper"
 require_contains ".config/hypr/keybindings.conf" 'brightnesscontrol\.sh' "keybindings use brightness wrapper"
+require_contains ".config/hypr/scripts/keybinds.sh" 'Print[[:space:]]+Screenshot menu' "keybind help shows screenshot menu"
+require_contains ".config/hypr/scripts/screenshot-menu.sh" 'Area to clipboard' "screenshot menu has area clipboard action"
+require_contains ".config/hypr/scripts/screenshot-menu.sh" 'Area to file' "screenshot menu has area file action"
+require_contains ".config/hypr/scripts/screenshot-menu.sh" 'Area annotate' "screenshot menu has annotation action"
+require_contains ".config/hypr/scripts/screenshot-menu.sh" 'Fullscreen to clipboard' "screenshot menu has fullscreen clipboard action"
+require_contains ".config/hypr/scripts/screenshot-menu.sh" 'Fullscreen to file' "screenshot menu has fullscreen file action"
+require_contains ".config/hypr/scripts/screenshot-menu.sh" 'Monitor to file' "screenshot menu has monitor file action"
+require_contains ".config/hypr/scripts/screenshot-menu.sh" 'Color picker' "screenshot menu has color picker action"
+require_contains ".config/hypr/scripts/screenshot-menu.sh" 'wf-recorder' "screenshot menu supports recording toggle"
+require_contains "scripts/pkg_core.lst" '^wf-recorder\|wf-recorder\|recommended\|' "package manifest includes screenshot recorder"
 require_contains "verify-rice.sh" 'scripts/pkg_core\.lst' "verify-rice reads package manifest"
 require_contains "verify-rice.sh" 'xdg-desktop-portal-hyprland' "verify-rice checks hyprland portal"
 require_contains "verify-rice.sh" 'hypridle' "verify-rice checks hypridle"
@@ -110,6 +122,7 @@ for file in \
     ".config/hypr/scripts/brightnesscontrol.sh" \
     ".config/hypr/scripts/resetxdgportal.sh" \
     ".config/hypr/scripts/keybinds.sh" \
+    ".config/hypr/scripts/screenshot-menu.sh" \
     ".config/hypr/scripts/swayosd-launch.sh" \
     "verify-rice.sh"; do
     require_shell_syntax "$file"
