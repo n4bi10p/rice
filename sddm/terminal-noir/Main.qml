@@ -17,6 +17,33 @@ QQC2.Pane {
     palette.window: config.BackgroundColor || "#000000"
     font.family: config.Font || "JetBrains Mono"
     font.pointSize: config.FontSize !== "" ? config.FontSize : 13
+    property bool virtualKeyboardManual: false
+    property var virtualKeyboardTarget: null
+
+    function suppressVirtualKeyboard() {
+        if (!virtualKeyboardManual) {
+            suppressKeyboardTimer.restart()
+        }
+    }
+
+    Timer {
+        id: suppressKeyboardTimer
+        interval: 1
+        repeat: false
+        onTriggered: {
+            if (!root.virtualKeyboardManual) {
+                Qt.inputMethod.hide()
+            }
+        }
+    }
+
+    Connections {
+        target: Qt.inputMethod
+
+        function onVisibleChanged() {
+            root.suppressVirtualKeyboard()
+        }
+    }
 
     Item {
         anchors.fill: parent
@@ -71,6 +98,44 @@ QQC2.Pane {
             id: loginForm
             anchors.fill: loginSurface
             anchors.margins: Math.max(28, root.height * 0.035)
+        }
+
+        Loader {
+            id: virtualKeyboard
+            source: "Components/VirtualKeyboard.qml"
+            width: config.KeyboardSize !== "" ? Math.min(root.width, root.width * Number(config.KeyboardSize)) : Math.min(root.width, 980)
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            z: 4
+
+            function switchState() {
+                if (root.virtualKeyboardManual) {
+                    hideKeyboard()
+                } else {
+                    showKeyboard()
+                }
+            }
+
+            function showKeyboard() {
+                root.virtualKeyboardManual = true
+                if (item) {
+                    item.activated = true
+                }
+                if (root.virtualKeyboardTarget) {
+                    root.virtualKeyboardTarget.forceActiveFocus()
+                }
+                Qt.inputMethod.show()
+            }
+
+            function hideKeyboard() {
+                root.virtualKeyboardManual = false
+                if (item) {
+                    item.activated = false
+                }
+                Qt.inputMethod.hide()
+            }
+
+            onLoaded: item.activated = root.virtualKeyboardManual
         }
 
         Rectangle {

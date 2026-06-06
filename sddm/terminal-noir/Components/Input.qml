@@ -49,6 +49,12 @@ ColumnLayout {
         rightPadding: 44
         Keys.onReturnPressed: password.forceActiveFocus()
         Keys.onEnterPressed: password.forceActiveFocus()
+        onActiveFocusChanged: {
+            if (activeFocus) {
+                root.virtualKeyboardTarget = username
+                root.suppressVirtualKeyboard()
+            }
+        }
 
         Image {
             source: Qt.resolvedUrl("../Assets/User.svg")
@@ -87,6 +93,12 @@ ColumnLayout {
         leftPadding: 44
         rightPadding: 44
         onAccepted: login()
+        onActiveFocusChanged: {
+            if (activeFocus) {
+                root.virtualKeyboardTarget = password
+                root.suppressVirtualKeyboard()
+            }
+        }
 
         Image {
             source: Qt.resolvedUrl("../Assets/Password.svg")

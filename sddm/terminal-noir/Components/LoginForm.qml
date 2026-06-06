@@ -18,14 +18,19 @@ ColumnLayout {
         selectedSession: sessionButton.selectedSession
     }
 
+    VirtualKeyboardButton {
+        Layout.alignment: Qt.AlignHCenter
+        Layout.preferredHeight: parent.height * 0.06
+    }
+
     SystemButtons {
         Layout.alignment: Qt.AlignHCenter
-        Layout.preferredHeight: parent.height * 0.12
+        Layout.preferredHeight: parent.height * 0.1
     }
 
     SessionButton {
         id: sessionButton
         Layout.alignment: Qt.AlignHCenter
-        Layout.preferredHeight: parent.height * 0.08
+        Layout.preferredHeight: parent.height * 0.07
     }
 }
