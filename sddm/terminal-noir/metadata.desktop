@@ -1,0 +1,12 @@
+[SddmGreeterTheme]
+Name=Terminal Noir
+Description=Monochrome Terminal Noir SDDM theme
+Author=n4bi10p
+License=GPL-3.0-or-later
+Type=sddm-theme
+Version=1.0
+ConfigFile=Themes/terminal-noir.conf
+MainScript=Main.qml
+Theme-Id=terminal-noir
+Theme-API=2.0
+QtVersion=6

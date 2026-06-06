@@ -1,237 +1,83 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Effects
 import SddmComponents 2.0
 
-Rectangle {
+import "Components"
+
+Pane {
     id: root
+
     width: Screen.width
     height: Screen.height
-    color: "#000000"
+    padding: 0
+    focus: true
 
-    property string fontName: config.Font || "JetBrains Mono"
-    property string clockFormat: config.ClockFormat || "HH:mm"
-    property string dateFormat: config.DateFormat || "dddd, MMMM d"
-    property date currentDate: new Date()
+    palette.window: config.BackgroundColor || "#000000"
+    font.family: config.Font || "JetBrains Mono"
+    font.pointSize: config.FontSize !== "" ? config.FontSize : 13
 
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: root.currentDate = new Date()
-    }
-
-    Image {
+    Item {
         anchors.fill: parent
-        source: config.BackgroundBlur || "background-blur.png"
-        fillMode: Image.PreserveAspectCrop
-        cache: false
-        asynchronous: false
-    }
 
-    Rectangle {
-        anchors.fill: parent
-        color: "#000000"
-        opacity: 0.42
-    }
-
-    Rectangle {
-        anchors.fill: parent
-        color: "transparent"
-        border.color: "#1c1c1c"
-        border.width: 1
-    }
-
-    ColumnLayout {
-        anchors.centerIn: parent
-        width: Math.min(root.width * 0.42, 520)
-        spacing: 18
-
-        Text {
-            Layout.fillWidth: true
-            text: Qt.formatTime(root.currentDate, root.clockFormat)
-            color: "#ffffff"
-            font.family: root.fontName
-            font.pixelSize: 74
-            font.bold: true
-            horizontalAlignment: Text.AlignHCenter
-        }
-
-        Text {
-            Layout.fillWidth: true
-            text: Qt.formatDate(root.currentDate, root.dateFormat).toUpperCase()
-            color: "#b0b0b0"
-            font.family: root.fontName
-            font.pixelSize: 13
-            font.letterSpacing: 4
-            horizontalAlignment: Text.AlignHCenter
+        Image {
+            id: backgroundImage
+            anchors.fill: parent
+            source: config.Background || "background.png"
+            fillMode: config.CropBackground == "false" ? Image.PreserveAspectFit : Image.PreserveAspectCrop
+            asynchronous: true
+            cache: false
+            smooth: true
         }
 
         Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 1
-            color: "#333333"
+            anchors.fill: parent
+            color: config.DimBackgroundColor || "#000000"
+            opacity: config.DimBackground !== "" ? Number(config.DimBackground) : 0.42
         }
 
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 10
-
-            TextField {
-                id: userInput
-                Layout.fillWidth: true
-                Layout.preferredHeight: 44
-                text: userModel.lastUser
-                placeholderText: "username"
-                color: "#ffffff"
-                selectionColor: "#e0e0e0"
-                selectedTextColor: "#000000"
-                font.family: root.fontName
-                font.pixelSize: 13
-                background: Rectangle {
-                    color: "#0a0a0acc"
-                    border.color: userInput.activeFocus ? "#e0e0e0" : "#333333"
-                    border.width: 1
-                    radius: 0
-                }
-                Keys.onReturnPressed: passwordInput.forceActiveFocus()
-                Keys.onEnterPressed: passwordInput.forceActiveFocus()
-            }
-
-            TextField {
-                id: passwordInput
-                Layout.fillWidth: true
-                Layout.preferredHeight: 44
-                placeholderText: "password"
-                echoMode: TextInput.Password
-                color: "#ffffff"
-                selectionColor: "#e0e0e0"
-                selectedTextColor: "#000000"
-                font.family: root.fontName
-                font.pixelSize: 13
-                focus: true
-                background: Rectangle {
-                    color: "#0a0a0acc"
-                    border.color: passwordInput.activeFocus ? "#e0e0e0" : "#333333"
-                    border.width: 1
-                    radius: 0
-                }
-                Keys.onReturnPressed: sddm.login(userInput.text, passwordInput.text, sessionSelector.currentIndex)
-                Keys.onEnterPressed: sddm.login(userInput.text, passwordInput.text, sessionSelector.currentIndex)
-            }
-
-            Button {
-                id: loginButton
-                Layout.fillWidth: true
-                Layout.preferredHeight: 42
-                text: "LOGIN"
-                font.family: root.fontName
-                font.pixelSize: 12
-                font.bold: true
-                background: Rectangle {
-                    color: loginButton.pressed ? "#ffffff" : "#e0e0e0"
-                    border.color: "#e0e0e0"
-                    border.width: 1
-                    radius: 0
-                }
-                contentItem: Text {
-                    text: loginButton.text
-                    color: "#000000"
-                    font: loginButton.font
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-                onClicked: sddm.login(userInput.text, passwordInput.text, sessionSelector.currentIndex)
-            }
+        ShaderEffectSource {
+            id: blurSource
+            anchors.fill: loginSurface
+            sourceItem: backgroundImage
+            sourceRect: Qt.rect(loginSurface.x, loginSurface.y, loginSurface.width, loginSurface.height)
+            visible: false
         }
 
-        Text {
-            Layout.fillWidth: true
-            text: sddm.lastLoginMessage
-            visible: text.length > 0
-            color: "#888888"
-            font.family: root.fontName
-            font.pixelSize: 11
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignHCenter
-        }
-    }
-
-    RowLayout {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.margins: 28
-        spacing: 10
-
-        ComboBox {
-            id: sessionSelector
-            Layout.preferredWidth: 190
-            Layout.preferredHeight: 34
-            model: sessionModel
-            textRole: "name"
-            font.family: root.fontName
-            font.pixelSize: 11
-            background: Rectangle {
-                color: "#0a0a0acc"
-                border.color: "#333333"
-                border.width: 1
-                radius: 0
-            }
-            contentItem: Text {
-                text: sessionSelector.displayText
-                color: "#c8c8c8"
-                font: sessionSelector.font
-                verticalAlignment: Text.AlignVCenter
-                leftPadding: 10
-                elide: Text.ElideRight
-            }
+        MultiEffect {
+            anchors.fill: loginSurface
+            source: config.PartialBlur == "true" ? blurSource : backgroundImage
+            blurEnabled: config.PartialBlur == "true" || config.FullBlur == "true"
+            blur: config.Blur !== "" ? Number(config.Blur) : 1.0
+            blurMax: config.BlurMax !== "" ? Number(config.BlurMax) : 48
+            autoPaddingEnabled: false
+            visible: blurEnabled
         }
 
-        Item { Layout.fillWidth: true }
-
-        Button {
-            Layout.preferredWidth: 92
-            Layout.preferredHeight: 34
-            text: "REBOOT"
-            font.family: root.fontName
-            font.pixelSize: 10
-            background: Rectangle {
-                color: "#0a0a0acc"
-                border.color: "#333333"
-                border.width: 1
-                radius: 0
-            }
-            contentItem: Text {
-                text: parent.text
-                color: "#c8c8c8"
-                font: parent.font
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-            onClicked: sddm.reboot()
+        Rectangle {
+            id: loginSurface
+            width: Math.min(root.width * 0.42, 520)
+            height: Math.min(root.height * 0.68, 620)
+            anchors.centerIn: parent
+            color: config.FormBackgroundColor || "#080808"
+            opacity: config.FormBackgroundOpacity !== "" ? Number(config.FormBackgroundOpacity) : 0.62
+            border.color: config.BorderColor || "#333333"
+            border.width: 1
+            radius: config.RoundCorners !== "" ? Number(config.RoundCorners) : 0
         }
 
-        Button {
-            Layout.preferredWidth: 104
-            Layout.preferredHeight: 34
-            text: "SHUTDOWN"
-            font.family: root.fontName
-            font.pixelSize: 10
-            background: Rectangle {
-                color: "#0a0a0acc"
-                border.color: "#333333"
-                border.width: 1
-                radius: 0
-            }
-            contentItem: Text {
-                text: parent.text
-                color: "#c8c8c8"
-                font: parent.font
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-            onClicked: sddm.powerOff()
+        LoginForm {
+            id: loginForm
+            anchors.fill: loginSurface
+            anchors.margins: Math.max(28, root.height * 0.035)
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            color: "transparent"
+            border.color: "#1c1c1c"
+            border.width: 1
         }
     }
 }
