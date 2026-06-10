@@ -125,6 +125,8 @@ for package in \
     require_contains "scripts/pkg_core.lst" "\\|${package}\\|" "package manifest includes ${package}"
 done
 
+require_contains "scripts/pkg_core.lst" '^/usr/lib/qt6/plugins/platforms/libqwayland\.so\|qt6-wayland\|recommended\|' "package manifest checks current Qt6 Wayland plugin path"
+
 require_contains "verify-rice.sh" 'scripts/install\.sh' "verify-rice checks installer"
 require_contains "verify-rice.sh" 'scripts/backup-config\.sh' "verify-rice checks backup script"
 require_contains "verify-rice.sh" 'scripts/restore-config\.sh' "verify-rice checks restore script"

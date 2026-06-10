@@ -57,11 +57,11 @@ qt6ct|qt6ct|recommended|Qt6 theme configuration utility
 kvantummanager|kvantum|recommended|Kvantum Qt theme manager
 kvantummanager|kvantum-qt5|recommended|Kvantum Qt5 compatibility
 /usr/lib/qt/plugins/platforms/libqwayland-generic.so|qt5-wayland|recommended|Qt5 Wayland platform support
-/usr/lib/qt6/plugins/platforms/libqwayland-generic.so|qt6-wayland|recommended|Qt6 Wayland platform support
+/usr/lib/qt6/plugins/platforms/libqwayland.so|qt6-wayland|recommended|Qt6 Wayland platform support
 /usr/lib/xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|recommended|GTK portal backend for file pickers
 xdg-user-dir|xdg-user-dirs|recommended|User directory helper
 wl-clip-persist|wl-clip-persist|recommended|Persist Wayland clipboard contents
-noto-fonts-emoji|noto-fonts-emoji|recommended|Emoji font coverage
+/usr/share/fonts/noto/NotoColorEmoji.ttf|noto-fonts-emoji|recommended|Emoji font coverage
 
 # HyDE-parity shell and utility tooling.
 zsh|zsh|recommended|Optional shell setup

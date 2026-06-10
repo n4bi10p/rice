@@ -7,6 +7,7 @@ SUPER + T                 Terminal
 SUPER + Space             App launcher
 SUPER + /                 Keybind help
 SUPER + V                 Clipboard
+SUPER + .                 Emoji picker
 SUPER + CTRL + L          Lock
 SUPER + M                 Logout menu
 SUPER + Q                 Close focused window

@@ -71,6 +71,22 @@ copy_selection() {
 }
 
 emoji_items() {
+    if command -v perl >/dev/null 2>&1 && perl -Mcharnames=:full -CS -e '
+        binmode STDOUT, ":encoding(UTF-8)";
+        my %seen;
+        for my $cp (0x2600..0x1FAFF) {
+            my $char = chr($cp);
+            next unless $char =~ /\p{Emoji_Presentation}|\p{Extended_Pictographic}/;
+            my $name = charnames::viacode($cp) // next;
+            $name = lc $name;
+            $name =~ s/\s+/ /g;
+            next if $seen{$char}++;
+            print "$char\t$name\n";
+        }
+    '; then
+        return 0
+    fi
+
     printf '%s\t%s\n' \
         "✓" "check" \
         "✕" "cross" \
@@ -97,11 +113,18 @@ glyph_items() {
 pick_from_items() {
     local kind="$1"
     local selection
+    local placeholder="Search ${kind}"
+
+    if [ "${TNCTL_LIST_ITEMS:-0}" = "1" ]; then
+        "$kind"_items
+        return
+    fi
 
     if [ "${TNCTL_SKIP_APPLY:-0}" = "1" ]; then
-        selection="$("$kind"_items | head -n 1)"
+        selection="$("$kind"_items)"
+        selection="${selection%%$'\n'*}"
     else
-        selection="$("$kind"_items | run_dmenu -p "$kind")"
+        selection="$("$kind"_items | run_dmenu -p "$kind" -theme-str "entry { placeholder: \"${placeholder}\"; }")"
     fi
 
     [ -n "$selection" ] || exit 0

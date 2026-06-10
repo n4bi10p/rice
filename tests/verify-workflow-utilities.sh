@@ -94,6 +94,7 @@ require_not_contains ".local/lib/terminal-noir/rofi.sh" 'planned for|not impleme
 require_not_contains ".local/lib/terminal-noir/window.sh" 'planned for|not implemented yet' "window helper has no placeholder actions"
 require_contains ".local/lib/terminal-noir/rofi.sh" 'xdg-open' "rofi helper can open files or web targets"
 require_contains ".local/lib/terminal-noir/rofi.sh" 'wl-copy' "rofi helper can copy emoji and glyph selections"
+require_contains ".local/lib/terminal-noir/rofi.sh" 'Search \$\{kind\}' "rofi item pickers set action-specific search placeholder"
 require_contains ".local/lib/terminal-noir/window.sh" 'hyprctl activewindow -j' "window mute inspects active Hyprland window"
 require_contains ".local/lib/terminal-noir/window.sh" 'application\.process\.id' "window mute maps audio streams by process id"
 require_contains ".local/lib/terminal-noir/window.sh" 'pactl set-sink-input-mute' "window mute toggles matched sink inputs"
@@ -117,6 +118,16 @@ if output="$(run_tnctl rofi emoji 2>&1)" && grep -q 'Copied emoji' <<<"$output";
 else
     printf '%s\n' "$output"
     fail "rofi emoji has safe copy path"
+fi
+
+if output="$(TNCTL_LIST_ITEMS=1 run_tnctl rofi emoji 2>&1)" \
+    && [ "$(printf '%s\n' "$output" | wc -l)" -gt 100 ] \
+    && grep -q 'grinning face' <<<"$output" \
+    && grep -q 'rocket' <<<"$output"; then
+    pass "rofi emoji lists full Unicode emoji set"
+else
+    printf '%s\n' "$output"
+    fail "rofi emoji lists full Unicode emoji set"
 fi
 
 if output="$(run_tnctl rofi glyph 2>&1)" && grep -q 'Copied glyph' <<<"$output"; then

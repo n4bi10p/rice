@@ -32,7 +32,7 @@ check_command() {
     local description="$4"
 
     if [[ "$command_name" == */* ]]; then
-        if [ -x "$command_name" ]; then
+        if [ -e "$command_name" ]; then
             pass "$command_name found"
             return
         fi
