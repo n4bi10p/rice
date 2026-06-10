@@ -5,3 +5,6 @@ ShowFullPath=true
 
 [KFileDialog Settings]
 Places Icons Auto-resize=false
+
+[UiSettings]
+ColorScheme=TerminalNoir

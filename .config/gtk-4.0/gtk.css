@@ -1,10 +1,12 @@
-@define-color noir_bg #0b0b0b;
-@define-color noir_panel #111111;
-@define-color noir_surface #171717;
-@define-color noir_border #2a2a2a;
-@define-color noir_fg #f4f4f4;
-@define-color noir_muted #9a9a9a;
-@define-color noir_focus #ffffff;
+@define-color noir_bg #141313;
+@define-color noir_panel #1c1b1b;
+@define-color noir_surface #201f1f;
+@define-color noir_border #444748;
+@define-color noir_fg #e5e2e1;
+@define-color noir_muted #8e9192;
+@define-color noir_selected #2a2a2a;
+@define-color noir_selected_fg #e5e2e1;
+@define-color noir_focus #c4c7c8;
 
 * {
     outline-color: @noir_focus;
@@ -46,8 +48,8 @@ radiobutton {
 button:hover,
 row:selected,
 selection {
-    background-color: @noir_fg;
-    color: @noir_bg;
+    background-color: @noir_selected;
+    color: @noir_selected_fg;
 }
 
 label:disabled,

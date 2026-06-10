@@ -1,0 +1,52 @@
+QAbstractItemView,
+QTreeView,
+QListView,
+QTableView,
+QColumnView,
+DolphinView,
+DolphinViewContainer,
+KItemListContainer,
+KItemListView,
+KFileItemListView {
+    background-color: rgba(20, 19, 19, 168);
+    alternate-background-color: transparent;
+    color: #e5e2e1;
+    selection-background-color: rgba(42, 42, 42, 218);
+    selection-color: #e5e2e1;
+    border-color: #333333;
+}
+
+QAbstractItemView::item,
+QTreeView::item,
+QListView::item,
+QTableView::item,
+QColumnView::item {
+    background: transparent;
+    color: #e5e2e1;
+}
+
+QAbstractItemView::item:alternate,
+QTreeView::item:alternate,
+QListView::item:alternate,
+QTableView::item:alternate,
+QColumnView::item:alternate {
+    background: transparent;
+    color: #e5e2e1;
+}
+
+QAbstractItemView::item:selected,
+QTreeView::item:selected,
+QListView::item:selected,
+QTableView::item:selected,
+QColumnView::item:selected {
+    background: rgba(42, 42, 42, 218);
+    color: #e5e2e1;
+}
+
+QHeaderView::section {
+    background-color: rgba(28, 27, 27, 230);
+    color: #e5e2e1;
+    border: 0;
+    border-bottom: 1px solid #333333;
+    padding: 4px 6px;
+}

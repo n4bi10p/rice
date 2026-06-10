@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+target_home="${1:-$HOME}"
+timestamp="$(date +'%Y%m%d-%H%M%S')"
+
+profile_roots=(
+    "$target_home/.zen"
+    "$target_home/.config/zen"
+)
+
+profile_paths() {
+    local root="$1"
+    local profiles_ini="$root/profiles.ini"
+
+    [ -f "$profiles_ini" ] || return 0
+
+    awk -F= -v root="$root" '
+        $1 == "Path" {
+            path = $2
+            if (path != "") {
+                print root "/" path
+            }
+        }
+    ' "$profiles_ini"
+}
+
+backup_file() {
+    local file="$1"
+    [ -f "$file" ] || return 0
+    cp -a "$file" "$file.terminal-noir.$timestamp.bak"
+}
+
+upsert_pref() {
+    local file="$1"
+    local name="$2"
+    local value="$3"
+    local line
+    line="user_pref(\"$name\", $value);"
+
+    if [ -f "$file" ] && grep -q "^user_pref(\"$name\"," "$file"; then
+        sed -i "s|^user_pref(\"$name\",.*|$line|" "$file"
+    else
+        printf '%s\n' "$line" >> "$file"
+    fi
+}
+
+write_profile_theme() {
+    local profile="$1"
+    local user_js="$profile/user.js"
+    local chrome_dir="$profile/chrome"
+    local user_chrome="$chrome_dir/userChrome.css"
+
+    [ -d "$profile" ] || return 0
+
+    mkdir -p "$chrome_dir"
+    backup_file "$user_js"
+    backup_file "$user_chrome"
+    touch "$user_js"
+
+    upsert_pref "$user_js" "toolkit.legacyUserProfileCustomizations.stylesheets" "true"
+    upsert_pref "$user_js" "ui.systemUsesDarkTheme" "1"
+    upsert_pref "$user_js" "layout.css.prefers-color-scheme.content-override" "0"
+    upsert_pref "$user_js" "browser.theme.content-theme" "0"
+    upsert_pref "$user_js" "browser.theme.toolbar-theme" "0"
+    upsert_pref "$user_js" "browser.in-content.dark-mode" "true"
+
+    cat > "$user_chrome" <<'CSS'
+:root {
+  color-scheme: dark !important;
+  --tn-bg: #141313;
+  --tn-bg-soft: #1c1b1b;
+  --tn-surface: #201f1f;
+  --tn-surface-high: #2a2a2a;
+  --tn-border: #444748;
+  --tn-fg: #e5e2e1;
+  --tn-muted: #8e9192;
+  --zen-colors-primary: var(--tn-bg) !important;
+  --zen-colors-secondary: var(--tn-bg-soft) !important;
+  --zen-colors-tertiary: var(--tn-surface-high) !important;
+  --zen-colors-border: var(--tn-border) !important;
+  --toolbar-bgcolor: var(--tn-bg) !important;
+  --toolbar-color: var(--tn-fg) !important;
+  --lwt-accent-color: var(--tn-bg) !important;
+  --lwt-text-color: var(--tn-fg) !important;
+  --lwt-toolbar-field-background-color: var(--tn-surface) !important;
+  --lwt-toolbar-field-color: var(--tn-fg) !important;
+  --lwt-toolbar-field-border-color: var(--tn-border) !important;
+}
+
+#navigator-toolbox,
+#titlebar,
+#TabsToolbar,
+#nav-bar,
+#PersonalToolbar,
+#zen-appcontent-navbar-container,
+#zen-sidebar,
+#zen-sidebar-top-buttons,
+#zen-sidebar-foot-buttons,
+#vertical-tabs,
+#sidebar-box,
+#sidebar,
+#browser,
+browser,
+.browserContainer,
+.browserSidebarContainer {
+  background: var(--tn-bg) !important;
+  color: var(--tn-fg) !important;
+  border-color: var(--tn-border) !important;
+}
+
+#urlbar-background,
+#searchbar,
+.tabbrowser-tab,
+toolbarbutton,
+.toolbarbutton-1 {
+  background: var(--tn-surface) !important;
+  color: var(--tn-fg) !important;
+  border-color: var(--tn-border) !important;
+  border-radius: 0 !important;
+}
+
+.tabbrowser-tab[selected],
+toolbarbutton:hover,
+.toolbarbutton-1:hover,
+#urlbar[open] #urlbar-background {
+  background: var(--tn-surface-high) !important;
+  color: var(--tn-fg) !important;
+}
+
+#urlbar-input,
+.urlbarView-title,
+.urlbarView-url,
+toolbar .toolbarbutton-text {
+  color: var(--tn-fg) !important;
+}
+
+.urlbarView-row:hover,
+.urlbarView-row[selected] {
+  background: var(--tn-surface-high) !important;
+  color: var(--tn-fg) !important;
+}
+CSS
+
+    printf 'themed: %s\n' "$profile"
+}
+
+found=0
+for root in "${profile_roots[@]}"; do
+    while IFS= read -r profile; do
+        [ -n "$profile" ] || continue
+        found=1
+        write_profile_theme "$profile"
+    done < <(profile_paths "$root")
+done
+
+if [ "$found" -eq 0 ]; then
+    printf 'No Zen profiles found under %s/.zen or %s/.config/zen\n' "$target_home" "$target_home" >&2
+    exit 1
+fi

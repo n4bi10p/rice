@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.0-or-later
+
 [ColorEffects:Disabled]
 Color=85,85,85
 ColorAmount=0
@@ -132,20 +134,11 @@ ForegroundVisited=142,145,146
 
 [General]
 ColorScheme=TerminalNoir
-TerminalApplication=kitty
-widgetStyle=Breeze
-
-[Icons]
-Theme=Adwaita
+Name=Terminal Noir
+shadeSortColumn=true
 
 [KDE]
-ColorScheme=TerminalNoir
-LookAndFeelPackage=org.kde.breezedark.desktop
 contrast=4
-frameContrast=0.2
-
-[UiSettings]
-ColorScheme=TerminalNoir
 
 [WM]
 activeBackground=20,19,19
@@ -154,6 +147,3 @@ activeForeground=229,226,225
 inactiveBackground=14,14,14
 inactiveBlend=142,145,146
 inactiveForeground=142,145,146
-
-[Wallet]
-Enabled=false

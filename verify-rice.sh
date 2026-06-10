@@ -123,6 +123,7 @@ check_helpers() {
         "scripts/uninstall.sh" \
         "scripts/sync-config.sh" \
         "scripts/install-sddm-theme.sh" \
+        ".local/bin/terminal-noir-zen-theme" \
         ".config/quickshell/control_state.sh" \
         ".config/quickshell/wifi_state.sh" \
         ".config/quickshell/bluetooth_state.sh" \
@@ -169,13 +170,17 @@ check_theme_configs() {
         ".config/gtk-4.0/settings.ini" \
         ".config/gtk-4.0/gtk.css" \
         ".config/xsettingsd/xsettingsd.conf" \
+        ".config/Trolltech.conf" \
         ".config/qt5ct/qt5ct.conf" \
         ".config/qt5ct/colors/terminal-noir.conf" \
+        ".config/qt5ct/qss/terminal-noir.qss" \
         ".config/qt6ct/qt6ct.conf" \
         ".config/qt6ct/colors/terminal-noir.conf" \
+        ".config/qt6ct/qss/terminal-noir.qss" \
         ".config/Kvantum/kvantum.kvconfig" \
         ".config/Kvantum/TerminalNoir/TerminalNoir.kvconfig" \
         ".config/Kvantum/TerminalNoir/TerminalNoir.svg" \
+        ".local/share/color-schemes/TerminalNoir.colors" \
         ".config/kdeglobals" \
         ".config/dolphinrc"; do
         check_file "$path"
